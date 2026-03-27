@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang=zh-CN>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:description" content="">
+    <meta property="og:type" content="website">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        集群、分布式、微服务的概念、关系和区别 - undefined
+        
+    </title>
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/aircloud.css">
+
+    
+<link rel="stylesheet" href="/css/gitment.css">
+
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_28hi1hpxx24.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i> 关山难越，谁悲失路之人 </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar ">
+            <img src="/img/avatar.jpg" />
+        </div>
+        <div class="name">
+            <i>zzrve7</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li >
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li >
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li >
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li >
+                <a href="/collect/">
+                    <i class="iconfont icon-shoucang1"></i>
+                    <span>收藏</span>
+                </a>
+            </li>
+            <li >
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9E%B6%E6%9E%84%E6%BC%94%E8%BF%9B%E4%B9%8B%E8%B7%AF%EF%BC%9A%E4%B8%80%E6%96%87%E8%AF%BB%E6%87%82%E9%9B%86%E7%BE%A4%E3%80%81%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%8E%E5%BE%AE%E6%9C%8D%E5%8A%A1"><span class="toc-text">架构演进之路：一文读懂集群、分布式与微服务</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E9%9B%86%E7%BE%A4-Cluster-%E2%80%94%E2%80%94-%E5%A4%9A%E4%B8%AA%E4%BA%BA%E5%B9%B2%E4%B8%80%E6%A0%B7%E7%9A%84%E6%B4%BB"><span class="toc-text">1. 集群 (Cluster) —— 多个人干一样的活</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E9%9B%86%E7%BE%A4%EF%BC%9F"><span class="toc-text">什么是集群？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E7%9B%AE%E7%9A%84"><span class="toc-text">核心目的</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%88%86%E5%B8%83%E5%BC%8F-Distributed-%E2%80%94%E2%80%94-%E6%8B%86%E5%88%86%E4%BB%BB%E5%8A%A1%EF%BC%8C%E5%88%86%E5%B7%A5%E5%90%88%E4%BD%9C"><span class="toc-text">2. 分布式 (Distributed) —— 拆分任务，分工合作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%88%86%E5%B8%83%E5%BC%8F%EF%BC%9F"><span class="toc-text">什么是分布式？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A1%88%E4%BE%8B%E7%90%86%E8%A7%A3"><span class="toc-text">案例理解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E7%9B%AE%E7%9A%84-1"><span class="toc-text">核心目的</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%BE%AE%E6%9C%8D%E5%8A%A1-Microservices-%E2%80%94%E2%80%94-%E6%9E%81%E8%87%B4%E7%9A%84%E5%9E%82%E7%9B%B4%E6%8B%86%E5%88%86"><span class="toc-text">3. 微服务 (Microservices) —— 极致的垂直拆分</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%BE%AE%E6%9C%8D%E5%8A%A1%EF%BC%9F"><span class="toc-text">什么是微服务？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BE%AE%E6%9C%8D%E5%8A%A1%E7%9A%84%E7%89%B9%E7%82%B9"><span class="toc-text">微服务的特点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E4%B8%89%E8%80%85%E5%AF%B9%E6%AF%94%E8%A1%A8"><span class="toc-text">4. 三者对比表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%BD%A2%E8%B1%A1%E6%AF%94%E5%96%BB%EF%BC%9A%E9%A5%AD%E5%BA%97%E9%87%8C%E7%9A%84%E9%82%A3%E4%BA%9B%E4%BA%8B%E5%84%BF"><span class="toc-text">5. 形象比喻：饭店里的那些事儿</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol></li></ol>
+</div>
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-bg" id="search-bg"></div>
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input"/>
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+
+        <div class="index-about-mobile">
+            <i> 关山难越，谁悲失路之人 </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        集群、分布式、微服务的概念、关系和区别
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2024-10-04 23:52:11</span></span>
+        
+        <span class="attr">标签：/
+        
+        <a class="tag" href="/tags/#集群" title="集群">集群</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#分布式" title="分布式">分布式</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#微服务" title="微服务">微服务</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+</span>
+    </div>
+    <div class="post-content ">
+        <h1 id="架构演进之路：一文读懂集群、分布式与微服务"><a href="#架构演进之路：一文读懂集群、分布式与微服务" class="headerlink" title="架构演进之路：一文读懂集群、分布式与微服务"></a>架构演进之路：一文读懂集群、分布式与微服务</h1><p>在学习后端架构的过程中，<strong>集群、分布式、微服务</strong>这三个词就像三座大山。初学者往往觉得它们差不多，但实际上它们在架构维度和解决的问题上各有侧重。今天结合京东等实际案例，把我的学习笔记整理分享出来。</p>
+<hr>
+<h2 id="1-集群-Cluster-——-多个人干一样的活"><a href="#1-集群-Cluster-——-多个人干一样的活" class="headerlink" title="1. 集群 (Cluster) —— 多个人干一样的活"></a>1. 集群 (Cluster) —— 多个人干一样的活</h2><h3 id="什么是集群？"><a href="#什么是集群？" class="headerlink" title="什么是集群？"></a>什么是集群？</h3><p>集群实质是将<strong>多台服务器集中在一起，实现同一业务</strong>。<br>比如京东的购物车系统，双十一期间一台服务器肯定扛不住，我们就放 10 台服务器，这 10 台服务器都部署同样的代码，对外提供同样的功能。</p>
+<h3 id="核心目的"><a href="#核心目的" class="headerlink" title="核心目的"></a>核心目的</h3><ul>
+<li><strong>高可用 (High Availability)</strong>：一台机器挂了，其他机器顶上，业务不中断。</li>
+<li><strong>分担压力</strong>：通过负载均衡，把流量平摊到不同机器。</li>
+<li><strong>提高并发</strong>：单机 1000 QPS，10 台理论上就能扛住更大量级的访问。</li>
+</ul>
+<blockquote>
+<p><strong>注意</strong>：集群内部的每一个节点，做的都是<strong>相同</strong>的事情。</p>
+</blockquote>
+<hr>
+<h2 id="2-分布式-Distributed-——-拆分任务，分工合作"><a href="#2-分布式-Distributed-——-拆分任务，分工合作" class="headerlink" title="2. 分布式 (Distributed) —— 拆分任务，分工合作"></a>2. 分布式 (Distributed) —— 拆分任务，分工合作</h2><h3 id="什么是分布式？"><a href="#什么是分布式？" class="headerlink" title="什么是分布式？"></a>什么是分布式？</h3><p>分布式是一种系统的部署方式，核心就在于一个字：<strong>“拆”</strong>。<br>它将原本庞大的单体系统，按照业务功能拆分成多个独立的子系统，并部署在不同的服务器上。</p>
+<h3 id="案例理解"><a href="#案例理解" class="headerlink" title="案例理解"></a>案例理解</h3><p>以<strong>京东</strong>为例：</p>
+<ul>
+<li>京东是一个巨大的分布式系统，它包含了用户系统、订单系统、支付系统、物流系统等。</li>
+<li>这些系统运行在不同的机器上，通过网络（如 RPC）互相调用。</li>
+<li><strong>联系与区别</strong>：<ul>
+<li><strong>分布式中的每个节点，都可以做集群。</strong>（比如分布式里的“用户系统”，访问量大时可以部署 5 台机器组成集群）。</li>
+<li><strong>集群并不一定是分布式的。</strong>（比如传统的单体应用只做高可用水平扩展，它只是集群，没有业务上的拆分）。</li>
+</ul>
+</li>
+</ul>
+<h3 id="核心目的-1"><a href="#核心目的-1" class="headerlink" title="核心目的"></a>核心目的</h3><ul>
+<li><strong>解耦</strong>：系统间互不影响，方便开发维护。</li>
+<li><strong>水平扩容</strong>：哪个模块压力大，就单独给哪个模块加机器。</li>
+<li><strong>提高处理能力</strong>：多台机器协同处理不同逻辑，效率更高。</li>
+</ul>
+<hr>
+<h2 id="3-微服务-Microservices-——-极致的垂直拆分"><a href="#3-微服务-Microservices-——-极致的垂直拆分" class="headerlink" title="3. 微服务 (Microservices) —— 极致的垂直拆分"></a>3. 微服务 (Microservices) —— 极致的垂直拆分</h2><h3 id="什么是微服务？"><a href="#什么是微服务？" class="headerlink" title="什么是微服务？"></a>什么是微服务？</h3><p>微服务是架构设计的一种<strong>风格</strong>，可以理解为<strong>非常细粒度的垂直拆分</strong>。<br>它要求我们将复杂的业务拆分成多个微小的服务，每个服务只负责一件很小的事（比如“发短信服务”），并且可以独立运行、独立部署、独立使用不同的数据库或编程语言。</p>
+<h3 id="微服务的特点"><a href="#微服务的特点" class="headerlink" title="微服务的特点"></a>微服务的特点</h3><ul>
+<li><strong>边界清晰</strong>：围绕业务能力构建。</li>
+<li><strong>自治</strong>：每个服务有自己的数据库，甚至可以用 Java 写服务 A，用 Go 写服务 B。</li>
+<li><strong>轻量级通信</strong>：通常采用 HTTP API 或轻量级的 RPC 通信。</li>
+<li><strong>去中心化</strong>：拒绝大型单体，保持最低限度的集中式管理。</li>
+</ul>
+<hr>
+<h2 id="4-三者对比表"><a href="#4-三者对比表" class="headerlink" title="4. 三者对比表"></a>4. 三者对比表</h2><table>
+<thead>
+<tr>
+<th align="left">维度</th>
+<th align="left">集群 (Cluster)</th>
+<th align="left">分布式 (Distributed)</th>
+<th align="left">微服务 (Microservices)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>核心目的</strong></td>
+<td align="left">高可用、抗并发</td>
+<td align="left">拆分复杂系统、提升性能</td>
+<td align="left">极致解耦、独立迭代、扩缩容</td>
+</tr>
+<tr>
+<td align="left"><strong>节点关系</strong></td>
+<td align="left">节点功能<strong>完全相同</strong></td>
+<td align="left">节点功能不同，互相配合</td>
+<td align="left">节点功能<strong>高度专一</strong>，完全自治</td>
+</tr>
+<tr>
+<td align="left"><strong>拆分粒度</strong></td>
+<td align="left">不拆分业务，只增加副本</td>
+<td align="left">按大模块拆分（如订单、用户）</td>
+<td align="left">按业务领域拆到最小单元</td>
+</tr>
+<tr>
+<td align="left"><strong>典型场景</strong></td>
+<td align="left">单机扛不住，多开几个一样的</td>
+<td align="left">单体系统太大，拆成几个模块</td>
+<td align="left">大型互联网、复杂业务、多团队协作</td>
+</tr>
+<tr>
+<td align="left"><strong>一句话概括</strong></td>
+<td align="left"><strong>多胞胎</strong>一起干活</td>
+<td align="left"><strong>多人分工</strong>合作</td>
+<td align="left"><strong>高度专业化</strong>分工，各司其职</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="5-形象比喻：饭店里的那些事儿"><a href="#5-形象比喻：饭店里的那些事儿" class="headerlink" title="5. 形象比喻：饭店里的那些事儿"></a>5. 形象比喻：饭店里的那些事儿</h2><p>为了更好地理解，我们可以把一个系统想象成一家<strong>饭店</strong>：</p>
+<ol>
+<li><p><strong>集群（多开几个灶台）</strong>：<br>饭店生意太火，一个厨师忙不过来，老板又招了 2 个厨师，3 个厨师都会做所有的菜。谁闲着谁就接单。<br><em>——这就是多台机器做相同的服务。</em></p>
+</li>
+<li><p><strong>分布式（岗位分工）</strong>：<br>饭店规模扩大了，老板发现效率不高，于是把人员分成：厨师（负责做菜）、服务员（负责点菜）、收银员（负责结账）。大家各司其职，配合完成一顿饭。<br><em>——这就是将系统拆分成不同模块，分布部署。</em></p>
+</li>
+<li><p><strong>微服务（精细化流水线）</strong>：<br>饭店成了米其林餐厅。老板进一步细化：切菜的只管切菜，炒菜的只管炒菜，炖汤的只管炖汤，摆盘的只管摆盘，传菜的只管传菜……每个人只干一件小事，互不干扰，甚至切菜的请假了，可以临时调个切菜工来，不影响炒菜的。<br><em>——这就是基于业务边界的极致拆分。</em></p>
+</li>
+</ol>
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li><strong>集群</strong>是提高抗压能力和可用性的手段。</li>
+<li><strong>分布式</strong>是解决系统规模大、耦合度高的问题。</li>
+<li><strong>微服务</strong>是在分布式的基础上，进一步追求业务的灵活性和独立迭代能力。</li>
+</ul>
+<p>在实际的生产环境中，我们往往是**“微服务 + 分布式 + 集群”**三者结合：将系统拆分为微服务（分布式），再为每个压力大的微服务部署多台机器（集群）。</p>
+<hr>
+
+        
+        <br />
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+        <div id="lv-container"></div>
+        <div class="giscus"></div>
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+
+        
+
+        
+
+        
+
+        
+
+    </ul>
+    
+    <p>
+        <span id="busuanzi_container_site_pv">
+            <span id="busuanzi_value_site_pv"></span>PV
+        </span>
+        <span id="busuanzi_container_site_uv">
+            <span id="busuanzi_value_site_uv"></span>UV
+        </span>
+        Created By <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>  Theme <a target="_blank" rel="noopener" href="https://github.com/aircloud/hexo-theme-aircloud">AirCloud</a></p>
+</footer>
+
+
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = ""
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="/js/index.js"></script>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+</html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang=zh-CN>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:description" content="">
+    <meta property="og:type" content="website">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        苍穹外卖升级Spring Boot 3 - undefined
+        
+    </title>
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/aircloud.css">
+
+    
+<link rel="stylesheet" href="/css/gitment.css">
+
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_28hi1hpxx24.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i> 关山难越，谁悲失路之人 </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar ">
+            <img src="/img/avatar.jpg" />
+        </div>
+        <div class="name">
+            <i>zzrve7</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li >
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li >
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li >
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li >
+                <a href="/collect/">
+                    <i class="iconfont icon-shoucang1"></i>
+                    <span>收藏</span>
+                </a>
+            </li>
+            <li >
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Spring-Boot-3-%E5%8D%87%E7%BA%A7%E9%81%BF%E5%9D%91%E6%8C%87%E5%8D%97%EF%BC%9A%E5%85%A8%E5%B1%80-Jackson-%E9%85%8D%E7%BD%AE%E4%B8%BA%E4%BD%95%E2%80%9C%E8%83%8C%E5%88%BA%E2%80%9D%E4%BA%86-Knife4j%EF%BC%9F"><span class="toc-text">Spring Boot 3 升级避坑指南：全局 Jackson 配置为何“背刺”了 Knife4j？</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E9%9B%AA%E8%8A%B1%E7%AE%97%E6%B3%95%E4%B8%8E-JavaScript-%E7%9A%84%E2%80%9C%E7%B2%BE%E5%BA%A6%E4%B9%8B%E7%97%9B%E2%80%9D"><span class="toc-text">1. 雪花算法与 JavaScript 的“精度之痛”</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E8%AF%A1%E5%BC%82%E7%9A%84%E2%80%9CBase64-%E4%B9%B1%E7%A0%81%E2%80%9D%E4%BA%8B%E4%BB%B6"><span class="toc-text">2. 诡异的“Base64 乱码”事件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%82%E5%B8%B8%E7%8E%B0%E8%B1%A1%E8%A7%82%E6%B5%8B%EF%BC%9A"><span class="toc-text">异常现象观测：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%B7%B1%E5%BA%A6%E6%BA%AF%E6%BA%90%EF%BC%9A%E8%B0%81%E5%8A%A8%E4%BA%86%E6%88%91%E7%9A%84-JSON%EF%BC%9F"><span class="toc-text">3. 深度溯源：谁动了我的 JSON？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E5%9B%A0%E4%B8%80%EF%BC%9ASpringdoc-%E7%9A%84%E5%BA%95%E5%B1%82%E4%BC%98%E5%8C%96"><span class="toc-text">原因一：Springdoc 的底层优化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E5%9B%A0%E4%BA%8C%EF%BC%9A%E8%BD%AC%E6%8D%A2%E5%99%A8%E4%BC%98%E5%85%88%E7%BA%A7%E7%9A%84%E2%80%9C%E5%9B%9E%E6%97%8B%E9%95%96%E2%80%9D"><span class="toc-text">原因二：转换器优先级的“回旋镖”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E5%9B%A0%E4%B8%89%EF%BC%9AJackson-%E7%9A%84%E9%BB%98%E8%AE%A4%E8%A1%8C%E4%B8%BA"><span class="toc-text">原因三：Jackson 的默认行为</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%EF%BC%9A%E4%BC%98%E9%9B%85%E5%9C%B0%E2%80%9C%E6%94%BE%E8%A1%8C%E2%80%9D"><span class="toc-text">4. 解决方案：优雅地“放行”</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E5%8C%96%E5%90%8E%E7%9A%84%E6%96%B9%E6%A1%88%EF%BC%9A"><span class="toc-text">优化后的方案：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E7%BB%8F%E9%AA%8C%E6%80%BB%E7%BB%93%EF%BC%9A%E5%8D%87%E7%BA%A7%E8%B7%AF%E4%B8%8A%E7%9A%84%E4%B8%89%E6%9D%A1%E9%93%81%E5%BE%8B"><span class="toc-text">5. 经验总结：升级路上的三条铁律</span></a></li></ol></li></ol>
+</div>
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-bg" id="search-bg"></div>
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input"/>
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+
+        <div class="index-about-mobile">
+            <i> 关山难越，谁悲失路之人 </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        苍穹外卖升级Spring Boot 3
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2024-10-04 23:52:11</span></span>
+        
+        <span class="attr">标签：/
+        
+        <a class="tag" href="/tags/#Spring Boot" title="Spring Boot">Spring Boot</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+</span>
+    </div>
+    <div class="post-content ">
+        <h1 id="Spring-Boot-3-升级避坑指南：全局-Jackson-配置为何“背刺”了-Knife4j？"><a href="#Spring-Boot-3-升级避坑指南：全局-Jackson-配置为何“背刺”了-Knife4j？" class="headerlink" title="Spring Boot 3 升级避坑指南：全局 Jackson 配置为何“背刺”了 Knife4j？"></a>Spring Boot 3 升级避坑指南：全局 Jackson 配置为何“背刺”了 Knife4j？</h1><h2 id="1-雪花算法与-JavaScript-的“精度之痛”"><a href="#1-雪花算法与-JavaScript-的“精度之痛”" class="headerlink" title="1. 雪花算法与 JavaScript 的“精度之痛”"></a>1. 雪花算法与 JavaScript 的“精度之痛”</h2><p>在分布式系统中，<strong>雪花算法（Snowflake）</strong> 是生成分布式 ID 的首选。它生成的 19 位 <code>Long</code> 型 ID 在 Java 端运行完美，但到了前端却会引发一场灾难。</p>
+<p><strong>矛盾点：</strong> JavaScript 的 <code>Number</code> 类型遵循 IEEE 754 标准，其最大安全整数为 $2^{53} - 1$（即 <code>9007199254740991</code>，16 位）。当 19 位的 Long 型 ID 传给前端时，低三位会因精度丢失而自动变为 <code>0</code>，直接导致业务主键失效。</p>
+<p>为了彻底解决这一问题，在 Spring Boot 2.x 时代采用了一个“一劳永逸”的方案：在 <code>WebMvcConfiguration</code> 中重写 <code>extendMessageConverters</code>，将自定义的 Jackson 转换器强行插入到 <strong>第 0 位（最高优先级）</strong>，强制将所有 <code>Long</code> 类型序列化为 <code>String</code>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">extendMessageConverters</span><span class="params">(List&lt;HttpMessageConverter&lt;?&gt;&gt; converters)</span> &#123;</span><br><span class="line">    <span class="type">MappingJackson2HttpMessageConverter</span> <span class="variable">jacksonConverter</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MappingJackson2HttpMessageConverter</span>();</span><br><span class="line">    <span class="type">ObjectMapper</span> <span class="variable">objectMapper</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectMapper</span>();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 精度修复：将 Long 类型全局序列化为 String</span></span><br><span class="line">    <span class="type">SimpleModule</span> <span class="variable">simpleModule</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SimpleModule</span>();</span><br><span class="line">    simpleModule.addSerializer(Long.class, ToStringSerializer.instance);</span><br><span class="line">    simpleModule.addSerializer(Long.TYPE, ToStringSerializer.instance);</span><br><span class="line">    objectMapper.registerModule(simpleModule);</span><br><span class="line">    </span><br><span class="line">    jacksonConverter.setObjectMapper(objectMapper);</span><br><span class="line">    <span class="comment">// 暴力美学：强行置顶，确保覆盖系统默认逻辑</span></span><br><span class="line">    converters.add(<span class="number">0</span>, jacksonConverter);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这段代码在 Swagger 2 时代一直表现稳健，直到我们将项目推向了 <strong>Spring Boot 3</strong>。</p>
+<hr>
+<h2 id="2-诡异的“Base64-乱码”事件"><a href="#2-诡异的“Base64-乱码”事件" class="headerlink" title="2. 诡异的“Base64 乱码”事件"></a>2. 诡异的“Base64 乱码”事件</h2><p>升级到 Spring Boot 3 并集成 <strong>Knife4j 4 (基于 Springdoc)</strong> 后，原本丝滑的文档页面突然变成了 <strong>“皇帝的新衣”——一片空白</strong>。如果直接访问 <code>http://localhost:8080/v3/api-docs</code> 就会得到如图所示的</p>
+<p><img src="/../img/Base64.png" alt="aa"></p>
+<h3 id="异常现象观测："><a href="#异常现象观测：" class="headerlink" title="异常现象观测："></a>异常现象观测：</h3><ol>
+<li><strong>接口响应异常</strong>：通过浏览器 F12 观察 <code>/v3/api-docs</code> 接口，发现返回的不是预期的 JSON 结构，而是一串极其冗长的 <strong>Base64 字符串</strong>。</li>
+<li><strong>前端解析失败</strong>：由于响应格式完全不符合 OpenAPI 规范，Knife4j 无法解析文档定义，最终导致页面渲染逻辑崩溃。</li>
+<li><strong>状态码困惑</strong>：即便强制刷新，接口有时返回 304，有时返回 200，但 Payload 始终是那串 Base64。</li>
+</ol>
+<hr>
+<h2 id="3-深度溯源：谁动了我的-JSON？"><a href="#3-深度溯源：谁动了我的-JSON？" class="headerlink" title="3. 深度溯源：谁动了我的 JSON？"></a>3. 深度溯源：谁动了我的 JSON？</h2><p>为什么同样的全局配置，在 Spring Boot 2 中平安无事，在 Spring Boot 3 中就成了毒药？</p>
+<h3 id="原因一：Springdoc-的底层优化"><a href="#原因一：Springdoc-的底层优化" class="headerlink" title="原因一：Springdoc 的底层优化"></a>原因一：Springdoc 的底层优化</h3><p>在 Spring Boot 3 对应的 Springdoc 实现中，为了提升性能，接口定义（OpenAPI Spec）在某些场景下会直接以 <code>byte[]</code>（字节数组）的形式返回。</p>
+<h3 id="原因二：转换器优先级的“回旋镖”"><a href="#原因二：转换器优先级的“回旋镖”" class="headerlink" title="原因二：转换器优先级的“回旋镖”"></a>原因二：转换器优先级的“回旋镖”</h3><p>我们在 <code>extendMessageConverters</code> 中将自定义 Jackson 转换器放到了 <code>0</code> 号位置。这意味着：<strong>任何类型的响应都会优先询问这个转换器：“你能处理吗？”</strong></p>
+<h3 id="原因三：Jackson-的默认行为"><a href="#原因三：Jackson-的默认行为" class="headerlink" title="原因三：Jackson 的默认行为"></a>原因三：Jackson 的默认行为</h3><p>当 <code>byte[]</code> 流经我们自定义的 <code>MappingJackson2HttpMessageConverter</code> 时，Jackson 发现自己可以处理字节数组，而它的默认处理逻辑就是：<strong>将字节数组序列化为 Base64 字符串。</strong></p>
+<blockquote>
+<p><strong>结论：</strong> 我们的全局配置由于优先级过高，意外“拦截”了本该由 <code>ByteArrayHttpMessageConverter</code> 处理的文档流，强行把 JSON 字节流转码成了 Base64 文本。</p>
+</blockquote>
+<hr>
+<h2 id="4-解决方案：优雅地“放行”"><a href="#4-解决方案：优雅地“放行”" class="headerlink" title="4. 解决方案：优雅地“放行”"></a>4. 解决方案：优雅地“放行”</h2><p>解决思路很简单：<strong>让自定义转换器学会“拒绝”它不该管的内容。</strong> 我们需要重写 <code>canWrite</code> 方法，将 <code>byte[]</code> 类型排除在外。</p>
+<h3 id="优化后的方案："><a href="#优化后的方案：" class="headerlink" title="优化后的方案："></a>优化后的方案：</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">extendMessageConverters</span><span class="params">(List&lt;HttpMessageConverter&lt;?&gt;&gt; converters)</span> &#123;</span><br><span class="line">    <span class="comment">// 1. 创建具备类型过滤能力的转换器</span></span><br><span class="line">    <span class="type">MappingJackson2HttpMessageConverter</span> <span class="variable">jacksonConverter</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MappingJackson2HttpMessageConverter</span>() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">canWrite</span><span class="params">(Class&lt;?&gt; clazz, MediaType mediaType)</span> &#123;</span><br><span class="line">            <span class="comment">// 关键点：如果是字节数组，不走 Jackson 序列化，交给后续的 ByteArrayHttpMessageConverter</span></span><br><span class="line">            <span class="keyword">if</span> (clazz.equals(<span class="type">byte</span>[].class)) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">super</span>.canWrite(clazz, mediaType);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 2. 配置 ObjectMapper 逻辑</span></span><br><span class="line">    <span class="type">ObjectMapper</span> <span class="variable">objectMapper</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectMapper</span>();</span><br><span class="line">    <span class="type">SimpleModule</span> <span class="variable">simpleModule</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SimpleModule</span>();</span><br><span class="line">    <span class="comment">// 解决 Long 精度丢失（Snowflake）</span></span><br><span class="line">    simpleModule.addSerializer(Long.class, ToStringSerializer.instance);</span><br><span class="line">    simpleModule.addSerializer(Long.TYPE, ToStringSerializer.instance);</span><br><span class="line">    objectMapper.registerModule(simpleModule);</span><br><span class="line">    jacksonConverter.setObjectMapper(objectMapper);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 3. 依然保持高优先级，但现在它更“聪明”了</span></span><br><span class="line">    converters.add(<span class="number">0</span>, jacksonConverter);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="5-经验总结：升级路上的三条铁律"><a href="#5-经验总结：升级路上的三条铁律" class="headerlink" title="5. 经验总结：升级路上的三条铁律"></a>5. 经验总结：升级路上的三条铁律</h2><ol>
+<li><strong>慎用“绝对优先级”</strong>：通过 <code>converters.add(0, ...)</code> 增强功能时，务必考虑对非 JSON 资源（图片、二进制流、PDF、接口文档）的影响。</li>
+<li><strong>Spring Boot 3 的透明变化</strong>：框架升级不仅是包名的重构（<code>javax</code> -&gt; <code>jakarta</code>），底层数据流转逻辑（如 Springdoc 对 <code>byte[]</code> 的使用）的改变往往更隐蔽。</li>
+<li><strong>调试排查路径</strong>：当 UI 框架（如 Knife4j&#x2F;Swagger）报错时，<strong>第一时间看 Network 原始响应</strong>。如果响应内容与 Content-Type 不符，通常是 <code>HttpMessageConverter</code> 链条发生了非预期的拦截。</li>
+</ol>
+<hr>
+<p><strong>作者后记</strong>：技术升级从不是简单的版本号更迭，而是对底层原理的又一次深度复习。希望这个“坑”能帮你少走弯路。</p>
+<hr>
+
+        
+        <br />
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+        <div id="lv-container"></div>
+        <div class="giscus"></div>
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+
+        
+
+        
+
+        
+
+        
+
+    </ul>
+    
+    <p>
+        <span id="busuanzi_container_site_pv">
+            <span id="busuanzi_value_site_pv"></span>PV
+        </span>
+        <span id="busuanzi_container_site_uv">
+            <span id="busuanzi_value_site_uv"></span>UV
+        </span>
+        Created By <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>  Theme <a target="_blank" rel="noopener" href="https://github.com/aircloud/hexo-theme-aircloud">AirCloud</a></p>
+</footer>
+
+
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = ""
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="/js/index.js"></script>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+</html>

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang=zh-CN>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:description" content="">
+    <meta property="og:type" content="website">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        入职培训 - undefined
+        
+    </title>
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/aircloud.css">
+
+    
+<link rel="stylesheet" href="/css/gitment.css">
+
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_28hi1hpxx24.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i> 关山难越，谁悲失路之人 </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar ">
+            <img src="/img/avatar.jpg" />
+        </div>
+        <div class="name">
+            <i>zzrve7</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li >
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li >
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li >
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li >
+                <a href="/collect/">
+                    <i class="iconfont icon-shoucang1"></i>
+                    <span>收藏</span>
+                </a>
+            </li>
+            <li >
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9F%B9%E8%AE%AD%E6%80%BB%E7%BB%93%EF%BC%9AAI-Agent-%E9%A9%B1%E5%8A%A8%E7%9A%84%E9%AB%98%E6%95%88%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5"><span class="toc-text">培训总结：AI Agent 驱动的高效开发实践</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81-AI-%E6%8F%90%E7%A4%BA%E8%AF%8D%E5%B7%A5%E7%A8%8B%EF%BC%9A%E4%BB%8E%E2%80%9C%E6%8F%8F%E8%BF%B0%E9%9C%80%E6%B1%82%E2%80%9D%E5%88%B0%E2%80%9C%E7%B2%BE%E5%87%86%E6%8C%87%E4%BB%A4%E2%80%9D"><span class="toc-text">一、 AI 提示词工程：从“描述需求”到“精准指令”</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E6%8F%90%E7%A4%BA%E8%AF%8D%E5%9B%9B%E8%A6%81%E7%B4%A0"><span class="toc-text">1.1 提示词四要素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E8%BF%9B%E9%98%B6%E5%BB%BA%E8%AE%AE"><span class="toc-text">1.2 进阶建议</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81-Agent-%E5%BC%80%E5%8F%91%E8%A7%84%E8%8C%83%EF%BC%9A%E6%9E%84%E5%BB%BA%E6%99%BA%E8%83%BD%E4%BD%93%E7%9A%84%E2%80%9C%E9%AA%A8%E6%9E%B6%E2%80%9D"><span class="toc-text">二、 Agent 开发规范：构建智能体的“骨架”</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E6%8A%80%E8%83%BD%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91%E6%A8%A1%E5%BC%8F"><span class="toc-text">2.1 技能驱动开发模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E8%A7%84%E8%8C%83%E5%B8%A6%E6%9D%A5%E7%9A%84%E6%94%B6%E7%9B%8A"><span class="toc-text">2.2 规范带来的收益</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81-%E5%8D%83%E8%A1%8C%E6%A1%86%E6%9E%B6%EF%BC%88gc-starter%EF%BC%89%E4%B8%8E%E5%B7%A5%E5%85%B7%E9%93%BE%E6%80%BB%E7%BB%93"><span class="toc-text">三、 千行框架（gc-starter）与工具链总结</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E6%A0%B8%E5%BF%83%E8%83%BD%E5%8A%9B%E7%9F%A9%E9%98%B5"><span class="toc-text">3.1 核心能力矩阵</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E6%A1%86%E6%9E%B6%E8%AE%BE%E8%AE%A1%E4%BA%AE%E7%82%B9%EF%BC%9A%E7%BA%A6%E5%AE%9A%E4%BC%98%E4%BA%8E%E9%85%8D%E7%BD%AE"><span class="toc-text">3.2 框架设计亮点：约定优于配置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81-%E6%A0%B8%E5%BF%83%E6%B5%8B%E8%AF%95%E5%9C%BA%E6%99%AF%E5%9B%9E%E9%A1%BE"><span class="toc-text">四、 核心测试场景回顾</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90%E4%B8%80%EF%BC%9AMCP-%E2%80%94%E2%80%94-%E5%BC%80%E5%90%AF-AI-%E4%B8%8E%E7%A7%81%E6%9C%89%E6%95%B0%E6%8D%AE%E7%9A%84%E2%80%9C%E6%A0%87%E5%87%86%E6%80%BB%E7%BA%BF%E2%80%9D%E6%97%B6%E4%BB%A3"><span class="toc-text">深度解析一：MCP —— 开启 AI 与私有数据的“标准总线”时代</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90%E4%BA%8C%EF%BC%9A%E5%8D%83%E8%A1%8C%E6%A1%86%E6%9E%B6-gc-starter-%E2%80%94%E2%80%94-AI-%E5%8E%9F%E7%94%9F%E5%BC%80%E5%8F%91%E7%9A%84%E2%80%9C%E7%BA%A6%E6%9D%9F%E4%B9%8B%E7%BE%8E%E2%80%9D"><span class="toc-text">深度解析二：千行框架 (gc-starter) —— AI 原生开发的“约束之美”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90%E4%B8%89%EF%BC%9A%E5%8D%8F%E5%90%8C%E8%BF%9B%E5%8C%96-%E2%80%94%E2%80%94-%E5%BD%93-MCP-%E9%81%87%E4%B8%8A%E5%8D%83%E8%A1%8C%E6%A1%86%E6%9E%B6"><span class="toc-text">深度解析三：协同进化 —— 当 MCP 遇上千行框架</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81-%E6%80%BB%E7%BB%93%E4%B8%8E%E5%B1%95%E6%9C%9B"><span class="toc-text">五、 总结与展望</span></a></li></ol></li></ol>
+</div>
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-bg" id="search-bg"></div>
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input"/>
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+
+        <div class="index-about-mobile">
+            <i> 关山难越，谁悲失路之人 </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        入职培训
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2026-07-20 11:50:11</span></span>
+        
+        <span class="attr">标签：/
+        
+        <a class="tag" href="/tags/#-千行框架 -低代码" title="-千行框架 -低代码">-千行框架 -低代码</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+</span>
+    </div>
+    <div class="post-content ">
+        <h1 id="培训总结：AI-Agent-驱动的高效开发实践"><a href="#培训总结：AI-Agent-驱动的高效开发实践" class="headerlink" title="培训总结：AI Agent 驱动的高效开发实践"></a>培训总结：AI Agent 驱动的高效开发实践</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在本次技术培训中，我们通过 <strong>“校园智能助手”</strong> 和 <strong>“记事本任务管理器”</strong> 两个实战项目，深入探索了 AI Agent 驱动的开发模式。本次培训不仅让我们掌握了 FastMCP 与 ms_agent 的集成应用，更重要的是领悟了如何通过“规范化提示词”与“标准化框架”与 AI 协作，实现从需求到代码的高效转化。</p>
+<hr>
+<h2 id="一、-AI-提示词工程：从“描述需求”到“精准指令”"><a href="#一、-AI-提示词工程：从“描述需求”到“精准指令”" class="headerlink" title="一、 AI 提示词工程：从“描述需求”到“精准指令”"></a>一、 AI 提示词工程：从“描述需求”到“精准指令”</h2><p>在 <strong>记事本任务管理器</strong> 的开发过程中，我们提炼出一套行之有效的提示词结构，这不仅适用于前端页面生成，也适用于后端工具的定义。</p>
+<h3 id="1-1-提示词四要素"><a href="#1-1-提示词四要素" class="headerlink" title="1.1 提示词四要素"></a>1.1 提示词四要素</h3><p>一个高质量的提示词应包含以下维度：</p>
+<ul>
+<li><strong>指定规范引用</strong>：如“读取 <code>gc-starter-frontend-dev-guide</code>”，确保 AI 输出符合团队编码风格。</li>
+<li><strong>明确功能范围</strong>：清晰定义 CRUD（增删改查）操作，避免 AI 遗漏核心逻辑。</li>
+<li><strong>指定技术方案</strong>：明确使用 <code>localStorage</code> 或特定协议（如 SSE 模式），减少技术选型的歧义。</li>
+<li><strong>约束数据表现</strong>：明确数据结构（如学号、成绩、学分）与持久化要求。</li>
+</ul>
+<h3 id="1-2-进阶建议"><a href="#1-2-进阶建议" class="headerlink" title="1.2 进阶建议"></a>1.2 进阶建议</h3><ul>
+<li><strong>细化字段定义</strong>：在提示词中预定义任务优先级、截止日期等字段，减少 AI 自行决策的空间。</li>
+<li><strong>UI 风格偏好</strong>：提前指定卡片式或表格式布局，降低返工率。</li>
+</ul>
+<hr>
+<h2 id="二、-Agent-开发规范：构建智能体的“骨架”"><a href="#二、-Agent-开发规范：构建智能体的“骨架”" class="headerlink" title="二、 Agent 开发规范：构建智能体的“骨架”"></a>二、 Agent 开发规范：构建智能体的“骨架”</h2><p>在 <strong>校园智能助手</strong> 项目中，我们利用 <strong>Model Context Protocol (MCP)</strong> 协议构建了高性能的工具集。</p>
+<h3 id="2-1-技能驱动开发模式"><a href="#2-1-技能驱动开发模式" class="headerlink" title="2.1 技能驱动开发模式"></a>2.1 技能驱动开发模式</h3><p>通过 <strong>FastMCP</strong> 快速发布工具服务，使 LLM 具备了查询校园私有数据的能力：</p>
+<ul>
+<li><strong>工具集成</strong>：封装 <code>get_student_grades</code> 与 <code>calculate_gpa</code> 两个核心工具。</li>
+<li><strong>标准协议</strong>：支持直接运行（stdio）与独立启动（SSE）两种模式，灵活适配不同场景。</li>
+<li><strong>多轮对话</strong>：通过 <code>ms_agent</code> 实现复杂逻辑（如：查分 -&gt; 自动触发绩点计算 -&gt; 格式化输出）。</li>
+</ul>
+<h3 id="2-2-规范带来的收益"><a href="#2-2-规范带来的收益" class="headerlink" title="2.2 规范带来的收益"></a>2.2 规范带来的收益</h3><p>严格遵循开发规范（如文件命名、目录结构、组件封装）能带来显著收益：</p>
+<ol>
+<li><strong>代码一致性</strong>：生成的业务页面与系统原生页面（如 <code>sys/config</code>）结构完全一致。</li>
+<li><strong>降低决策成本</strong>：AI 不再需要思考命名规则，只需关注业务逻辑实现。</li>
+<li><strong>可维护性</strong>：标准化的 <code>app-container</code> 布局与 <code>pageMixins</code> 应用，让团队协作无缝衔接。</li>
+</ol>
+<hr>
+<h2 id="三、-千行框架（gc-starter）与工具链总结"><a href="#三、-千行框架（gc-starter）与工具链总结" class="headerlink" title="三、 千行框架（gc-starter）与工具链总结"></a>三、 千行框架（gc-starter）与工具链总结</h2><p>高效的开发离不开底层框架的支撑，本次实战中我们深度应用了 <code>gc-starter</code> 系列框架的能力。</p>
+<h3 id="3-1-核心能力矩阵"><a href="#3-1-核心能力矩阵" class="headerlink" title="3.1 核心能力矩阵"></a>3.1 核心能力矩阵</h3><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>关键技术</th>
+<th>实际效益</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>UI 增强</strong></td>
+<td><code>gc-starter-ui-plus</code></td>
+<td>使用 <code>v-table</code> 自动处理表格高度，提升交互体验。</td>
+</tr>
+<tr>
+<td><strong>逻辑复用</strong></td>
+<td><code>pageMixins</code></td>
+<td>封装分页、查询逻辑，页面代码量减少 40% 以上。</td>
+</tr>
+<tr>
+<td><strong>工具连接</strong></td>
+<td><code>FastMCP</code></td>
+<td>极简定义 Server 端，让私有数据工具化。</td>
+</tr>
+<tr>
+<td><strong>智能调度</strong></td>
+<td><code>ms_agent</code></td>
+<td>自动识别用户意图并调用匹配工具。</td>
+</tr>
+</tbody></table>
+<h3 id="3-2-框架设计亮点：约定优于配置"><a href="#3-2-框架设计亮点：约定优于配置" class="headerlink" title="3.2 框架设计亮点：约定优于配置"></a>3.2 框架设计亮点：约定优于配置</h3><ul>
+<li><strong>路由自动化</strong>：遵循目录规范（<code>src/views/{业务}/index.vue</code>）即可实现自动路由匹配。</li>
+<li><strong>指令化操作</strong>：通过 <code>v-support</code> 和权限指令，将复杂的兼容性与权限逻辑隐藏在声明式指令后。</li>
+</ul>
+<hr>
+<h2 id="四、-核心测试场景回顾"><a href="#四、-核心测试场景回顾" class="headerlink" title="四、 核心测试场景回顾"></a>四、 核心测试场景回顾</h2><p>在 <strong>校园智能助手</strong> 的测试中，我们验证了 Agent 处理复杂业务流的能力：</p>
+<ul>
+<li><strong>场景覆盖</strong>：从简单的成绩查询到基于 4.0 分制的 GPA 复杂计算（Σ(绩点×学分)&#x2F;Σ学分）。</li>
+<li><strong>异常处理</strong>：Agent 能够识别“姓名与学号不匹配”或“缺少关键参数”等情况，并礼貌地引导用户补充信息。</li>
+</ul>
+<hr>
+<p>为了让这份博客的内容更加专业且具有深度，我们需要从<strong>架构设计、协同本质、以及演进趋势</strong>三个维度，对 <strong>MCP (Model Context Protocol)</strong> 和 <strong>千行框架 (gc-starter)</strong> 进行更深层次的解构。</p>
+<p>以下是补充进博客的深度理解内容：</p>
+<hr>
+<h3 id="深度解析一：MCP-——-开启-AI-与私有数据的“标准总线”时代"><a href="#深度解析一：MCP-——-开启-AI-与私有数据的“标准总线”时代" class="headerlink" title="深度解析一：MCP —— 开启 AI 与私有数据的“标准总线”时代"></a>深度解析一：MCP —— 开启 AI 与私有数据的“标准总线”时代</h3><p>在“校园智能助手”项目中，MCP 不仅仅是一个工具调用协议，它是解决 AI “幻觉”与“信息孤岛”的关键钥匙。</p>
+<ol>
+<li><p><strong>从“点对点集成”到“即插即用”的范式转移</strong>：</p>
+<ul>
+<li><strong>过去</strong>：我们要为每个 Agent 编写特定的 API 调用逻辑，代码耦合度高，工具难以复用。</li>
+<li><strong>MCP 时代</strong>：MCP 像是一个“通用 USB 接口”。Server 端（如 <code>server.py</code>）只需要暴露符合协议的 <code>tools</code> 或 <code>resources</code>，任何支持 MCP 的客户端（如 <code>ms_agent</code> 或 Claude Desktop）都能瞬间读取其能力。这种<strong>解耦</strong>意味着校园助手的功能可以像插件一样横向扩展，无需改动 Agent 核心逻辑。</li>
+</ul>
+</li>
+<li><p><strong>上下文的“动态注入”能力</strong>：</p>
+<ul>
+<li>MCP 的核心在于 <strong>Context（上下文）</strong>。它不仅仅是让 AI 执行一个计算 GPA 的函数，而是将本地的实时数据（学生的成绩库）安全地注入到大模型的推理链条中。</li>
+<li>通过 <strong>SSE (Server-Sent Events)</strong> 模式，我们看到了 MCP 跨网络、分布式部署的潜力——Server 可以运行在隔离的校内数据库服务器上，而 Agent 运行在云端，两者通过标准协议进行“安全对话”。</li>
+</ul>
+</li>
+<li><p><strong>推理权与执行权的边界</strong>：</p>
+<ul>
+<li>在 GPA 计算案例中，AI 负责“规划”（识别出需要先查分、再计算）和“决策”（判断数据是否完整），而 MCP Server 负责“执行”（计算逻辑、数据库查询）。这种**“模型思考、工具落地”**的边界划分，保证了复杂计算（如 GPA 权重算法）的精准性。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="深度解析二：千行框架-gc-starter-——-AI-原生开发的“约束之美”"><a href="#深度解析二：千行框架-gc-starter-——-AI-原生开发的“约束之美”" class="headerlink" title="深度解析二：千行框架 (gc-starter) —— AI 原生开发的“约束之美”"></a>深度解析二：千行框架 (gc-starter) —— AI 原生开发的“约束之美”</h3><p>在“记事本任务管理器”的开发中，千行框架展示了为何**“高度约束”<strong>反而能带来</strong>“极速生产”**。</p>
+<ol>
+<li><p><strong>“约定优于配置” (Convention over Configuration) 的终极体现</strong>：</p>
+<ul>
+<li>千行框架通过强约束的目录结构（如 <code>src/views/{module}/index.vue</code>）和命名规范，大幅降低了 AI 的“决策熵”。</li>
+<li>当我们在提示词中指定 <code>gc-starter-frontend-dev-guide</code> 时，AI 并不是在泛泛地写代码，而是在**“填空”**。因为它知道列表页必须有 <code>filter-container</code>，表格必须配合 <code>v-table</code>，分页必须依赖 <code>pageMixins</code>。这种高度的一致性，让 AI 生成的代码几乎无需二次调试。</li>
+</ul>
+</li>
+<li><p><strong>基础设施的“黑盒化”封装</strong>：</p>
+<ul>
+<li><code>pageMixins</code> 和指令集（<code>v-table</code>、<code>v-auth</code>）是框架的精髓。它们将复杂的业务逻辑（如分页状态同步、表格高度自适应计算、权限校验）封装成了<strong>声明式标签</strong>。</li>
+<li>对于开发者（或 AI）而言，页面开发从“写逻辑”变成了“组装能力”。这不仅提升了开发速度，更重要的是<strong>抹平了不同开发者之间的技术水平差异</strong>，确保了项目的长期可维护性。</li>
+</ul>
+</li>
+<li><p><strong>面向 AI 的“技能包”进化</strong>：</p>
+<ul>
+<li>千行框架的未来不仅仅是一套代码模板，它正在演变成一个 <strong>AI Skill (技能包)</strong>。通过将框架规范结构化（如 AGENTS.md），我们实际上是在为 AI 安装一个“专业前端开发插件”。这种“规范即技能”的模式，是未来企业级大模型应用的核心竞争力。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="深度解析三：协同进化-——-当-MCP-遇上千行框架"><a href="#深度解析三：协同进化-——-当-MCP-遇上千行框架" class="headerlink" title="深度解析三：协同进化 —— 当 MCP 遇上千行框架"></a>深度解析三：协同进化 —— 当 MCP 遇上千行框架</h3><p>将两者结合来看，我们可以推导出一种全新的 <strong>AI Agent 闭环开发模型</strong>：</p>
+<ul>
+<li><strong>MCP 负责“打通经脉”</strong>：它让 Agent 能够安全、标准地触达企业内部的底层资产（数据、算法、遗留系统）。</li>
+<li><strong>千行框架负责“重塑形态”</strong>：它提供了标准化的交互界面和业务组件，让 AI 产出的结果能以符合企业规范的形态（页面、表单、看板）呈现给用户。</li>
+</ul>
+<p><strong>总结性洞察：</strong><br>未来的开发不再是单纯的“写程序”，而是**“定义协议（MCP）”<strong>与</strong>“配置规范（Framework）”<strong>。开发者将转型为</strong>“提示词架构师”**，通过精准的规范输入，驱动 AI 在 MCP 总线与标准化框架之上，快速搭建出稳健、专业的业务应用。</p>
+<hr>
+<h2 id="五、-总结与展望"><a href="#五、-总结与展望" class="headerlink" title="五、 总结与展望"></a>五、 总结与展望</h2><p>通过本次培训，我们深刻认识到：<strong>规范越明确，AI 的输出质量越高。</strong></p>
+<p>未来的开发模式将是 <strong>“规范引导 + AI 生成 + 框架支撑”</strong> 的三位一体。我们将继续沉淀开发规范，将其转化为 AI 能够理解的 <code>Skill</code> 文件，进一步通过 Agent 自动化流程提升开发效能，构建更智能、更标准化的校园数字化产品。</p>
+<hr>
+<p><em>注：本文为培训总结，旨在记录 AI Agent 开发的最佳实践与心得感悟。</em></p>
+
+        
+        <br />
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+        <div id="lv-container"></div>
+        <div class="giscus"></div>
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+
+        
+
+        
+
+        
+
+        
+
+    </ul>
+    
+    <p>
+        <span id="busuanzi_container_site_pv">
+            <span id="busuanzi_value_site_pv"></span>PV
+        </span>
+        <span id="busuanzi_container_site_uv">
+            <span id="busuanzi_value_site_uv"></span>UV
+        </span>
+        Created By <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>  Theme <a target="_blank" rel="noopener" href="https://github.com/aircloud/hexo-theme-aircloud">AirCloud</a></p>
+</footer>
+
+
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = ""
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="/js/index.js"></script>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+    <script src="https://giscus.app/client.js"
+    data-repo="zzrve7/zzrve7.github.io"
+    data-repo-id="R_kgDOQnRIeA"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOQnRIeM4C5nXg"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="bottom"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    crossorigin="anonymous"
+    async>
+</script>
+
+
+
+
+</html>

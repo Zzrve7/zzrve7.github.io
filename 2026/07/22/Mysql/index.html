@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang=zh-CN>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:description" content="">
+    <meta property="og:type" content="website">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        MySQL 基础全指南 - undefined
+        
+    </title>
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/aircloud.css">
+
+    
+<link rel="stylesheet" href="/css/gitment.css">
+
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_28hi1hpxx24.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i> 关山难越，谁悲失路之人 </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar ">
+            <img src="/img/avatar.jpg" />
+        </div>
+        <div class="name">
+            <i>zzrve7</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li >
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li >
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li >
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li >
+                <a href="/collect/">
+                    <i class="iconfont icon-shoucang1"></i>
+                    <span>收藏</span>
+                </a>
+            </li>
+            <li >
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%9B%B6%E5%9F%BA%E7%A1%80%E4%B8%8A%E6%89%8B%EF%BC%9AMySQL-%E6%A0%B8%E5%BF%83%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E5%85%A8%E8%A7%A3%E6%9E%90"><span class="toc-text">零基础上手：MySQL 核心基础知识全解析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81-SQL-%E5%88%86%E7%B1%BB"><span class="toc-text">一、 SQL 分类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81-DDL%EF%BC%9A%E5%AE%9A%E4%B9%89%E4%BD%A0%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="toc-text">二、 DDL：定义你的数据结构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%95%B0%E6%8D%AE%E5%BA%93%E6%93%8D%E4%BD%9C"><span class="toc-text">1. 数据库操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E8%A1%A8%E6%93%8D%E4%BD%9C"><span class="toc-text">2. 表操作</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81-DML%EF%BC%9A%E6%95%B0%E6%8D%AE%E7%9A%84%E5%A2%9E%E3%80%81%E5%88%A0%E3%80%81%E6%94%B9"><span class="toc-text">三、 DML：数据的增、删、改</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%B7%BB%E5%8A%A0%E6%95%B0%E6%8D%AE-INSERT"><span class="toc-text">1. 添加数据 (INSERT)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E4%BF%AE%E6%94%B9%E6%95%B0%E6%8D%AE-UPDATE"><span class="toc-text">2. 修改数据 (UPDATE)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%88%A0%E9%99%A4%E6%95%B0%E6%8D%AE-DELETE"><span class="toc-text">3. 删除数据 (DELETE)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81-DQL%EF%BC%9A%E7%8E%A9%E8%BD%AC%E6%95%B0%E6%8D%AE%E6%9F%A5%E8%AF%A2%EF%BC%88%E6%A0%B8%E5%BF%83%EF%BC%89"><span class="toc-text">四、 DQL：玩转数据查询（核心）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%9D%A1%E4%BB%B6%E6%9F%A5%E8%AF%A2"><span class="toc-text">1. 基础与条件查询</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E8%81%9A%E5%90%88%E5%87%BD%E6%95%B0"><span class="toc-text">2. 聚合函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%88%86%E7%BB%84%E6%9F%A5%E8%AF%A2-GROUP-BY"><span class="toc-text">3. 分组查询 (GROUP BY)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E6%8E%92%E5%BA%8F%E4%B8%8E%E5%88%86%E9%A1%B5"><span class="toc-text">4. 排序与分页</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81-%E5%B8%B8%E7%94%A8%E5%86%85%E7%BD%AE%E5%87%BD%E6%95%B0"><span class="toc-text">五、 常用内置函数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%87%BD%E6%95%B0"><span class="toc-text">1. 字符串函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%95%B0%E5%80%BC%E5%87%BD%E6%95%B0"><span class="toc-text">2. 数值函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%97%A5%E6%9C%9F%E5%87%BD%E6%95%B0"><span class="toc-text">3. 日期函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E6%B5%81%E7%A8%8B%E5%87%BD%E6%95%B0"><span class="toc-text">4. 流程函数</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81-%E7%BA%A6%E6%9D%9F%E4%B8%8E%E5%A4%9A%E8%A1%A8%E5%85%B3%E8%81%94"><span class="toc-text">六、 约束与多表关联</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E7%BA%A6%E6%9D%9F%E5%88%86%E7%B1%BB"><span class="toc-text">1. 约束分类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%A4%9A%E8%A1%A8%E6%9F%A5%E8%AF%A2"><span class="toc-text">2. 多表查询</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%AD%90%E6%9F%A5%E8%AF%A2"><span class="toc-text">3. 子查询</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81-%E4%BA%8B%E5%8A%A1%E7%AE%A1%E7%90%86-Transaction"><span class="toc-text">七、 事务管理 (Transaction)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E4%BA%8B%E5%8A%A1%E6%8E%A7%E5%88%B6"><span class="toc-text">1. 事务控制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%9B%9B%E5%A4%A7%E7%89%B9%E6%80%A7-ACID"><span class="toc-text">2. 四大特性 (ACID)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%B9%B6%E5%8F%91%E4%BA%8B%E5%8A%A1%E9%97%AE%E9%A2%98%E4%B8%8E%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB"><span class="toc-text">3. 并发事务问题与隔离级别</span></a></li></ol></li></ol></li></ol>
+</div>
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-bg" id="search-bg"></div>
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input"/>
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+
+        <div class="index-about-mobile">
+            <i> 关山难越，谁悲失路之人 </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        MySQL 基础全指南
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2026-07-22 12:52:11</span></span>
+        
+        <span class="attr">标签：/
+        
+        <a class="tag" href="/tags/#Mysql" title="Mysql">Mysql</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+</span>
+    </div>
+    <div class="post-content ">
+        <h1 id="零基础上手：MySQL-核心基础知识全解析"><a href="#零基础上手：MySQL-核心基础知识全解析" class="headerlink" title="零基础上手：MySQL 核心基础知识全解析"></a>零基础上手：MySQL 核心基础知识全解析</h1><p>在后端开发中，数据库技术是重中之重。本文整理了 MySQL 的核心基础知识，包括 SQL 分类、数据库&#x2F;表操作、复杂查询、内置函数、约束机制以及事务管理。建议收藏作为你的 SQL 工具字典！</p>
+<hr>
+<h2 id="一、-SQL-分类"><a href="#一、-SQL-分类" class="headerlink" title="一、 SQL 分类"></a>一、 SQL 分类</h2><p>SQL 语言根据功能主要分为四类：</p>
+<ul>
+<li><strong>DDL (Data Definition Language)</strong>: 数据定义语言，定义数据库对象（数据库、表、字段）。</li>
+<li><strong>DML (Data Manipulation Language)</strong>: 数据操作语言，对表数据进行增删改。</li>
+<li><strong>DQL (Data Query Language)</strong>: 数据查询语言，查询表记录。</li>
+<li><strong>DCL (Data Control Language)</strong>: 数据控制语言，创建用户及控制访问权限。</li>
+</ul>
+<hr>
+<h2 id="二、-DDL：定义你的数据结构"><a href="#二、-DDL：定义你的数据结构" class="headerlink" title="二、 DDL：定义你的数据结构"></a>二、 DDL：定义你的数据结构</h2><h3 id="1-数据库操作"><a href="#1-数据库操作" class="headerlink" title="1. 数据库操作"></a>1. 数据库操作</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 查询所有数据库</span></span><br><span class="line"><span class="keyword">SHOW</span> DATABASES;</span><br><span class="line"><span class="comment">-- 查询当前所在数据库</span></span><br><span class="line"><span class="keyword">SELECT</span> DATABASE();</span><br><span class="line"><span class="comment">-- 创建数据库</span></span><br><span class="line"><span class="keyword">CREATE</span> DATABASE IF <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> demo <span class="keyword">DEFAULT</span> CHARSET utf8mb4;</span><br><span class="line"><span class="comment">-- 删除数据库</span></span><br><span class="line"><span class="keyword">DROP</span> DATABASE IF <span class="keyword">EXISTS</span> demo;</span><br><span class="line"><span class="comment">-- 切换数据库</span></span><br><span class="line">USE demo;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-表操作"><a href="#2-表操作" class="headerlink" title="2. 表操作"></a>2. 表操作</h3><p><strong>创建表：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE TABLE</span> tb_user(</span><br><span class="line">    id <span class="type">INT</span> COMMENT <span class="string">&#x27;编号&#x27;</span>,</span><br><span class="line">    name <span class="type">VARCHAR</span>(<span class="number">50</span>) COMMENT <span class="string">&#x27;姓名&#x27;</span>,</span><br><span class="line">    age <span class="type">INT</span> COMMENT <span class="string">&#x27;年龄&#x27;</span>,</span><br><span class="line">    gender <span class="type">VARCHAR</span>(<span class="number">1</span>) COMMENT <span class="string">&#x27;性别&#x27;</span></span><br><span class="line">) COMMENT <span class="string">&#x27;用户表&#x27;</span>;</span><br></pre></td></tr></table></figure>
+<p><strong>修改与删除：</strong></p>
+<ul>
+<li><strong>添加字段</strong>: <code>ALTER TABLE 表名 ADD 字段名 类型(长度) [COMMENT 注释];</code></li>
+<li><strong>修改类型</strong>: <code>ALTER TABLE 表名 MODIFY 字段名 新类型(长度);</code></li>
+<li><strong>修改字段名与类型</strong>: <code>ALTER TABLE 表名 CHANGE 旧字段 新字段 类型(长度);</code></li>
+<li><strong>删除字段</strong>: <code>ALTER TABLE 表名 DROP 字段名;</code></li>
+<li><strong>修改表名</strong>: <code>ALTER TABLE 表名 RENAME TO 新表名;</code></li>
+<li><strong>清空表（重置）</strong>: <code>TRUNCATE TABLE 表名;</code></li>
+</ul>
+<hr>
+<h2 id="三、-DML：数据的增、删、改"><a href="#三、-DML：数据的增、删、改" class="headerlink" title="三、 DML：数据的增、删、改"></a>三、 DML：数据的增、删、改</h2><h3 id="1-添加数据-INSERT"><a href="#1-添加数据-INSERT" class="headerlink" title="1. 添加数据 (INSERT)"></a>1. 添加数据 (INSERT)</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 给指定字段添加</span></span><br><span class="line"><span class="keyword">INSERT INTO</span> employee (id, workno, name) <span class="keyword">VALUES</span> (<span class="number">1</span>, <span class="string">&#x27;001&#x27;</span>, <span class="string">&#x27;张三&#x27;</span>);</span><br><span class="line"><span class="comment">-- 批量添加</span></span><br><span class="line"><span class="keyword">INSERT INTO</span> employee <span class="keyword">VALUES</span> (<span class="number">2</span>, <span class="string">&#x27;002&#x27;</span>, <span class="string">&#x27;李四&#x27;</span>, ...), (<span class="number">3</span>, <span class="string">&#x27;003&#x27;</span>, <span class="string">&#x27;王五&#x27;</span>, ...);</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-修改数据-UPDATE"><a href="#2-修改数据-UPDATE" class="headerlink" title="2. 修改数据 (UPDATE)"></a>2. 修改数据 (UPDATE)</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 修改 ID 为 1 的用户姓名</span></span><br><span class="line"><span class="keyword">UPDATE</span> employee <span class="keyword">SET</span> name <span class="operator">=</span> <span class="string">&#x27;itheima&#x27;</span> <span class="keyword">WHERE</span> id <span class="operator">=</span> <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-删除数据-DELETE"><a href="#3-删除数据-DELETE" class="headerlink" title="3. 删除数据 (DELETE)"></a>3. 删除数据 (DELETE)</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 删除所有女性员工</span></span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> employee <span class="keyword">WHERE</span> gender <span class="operator">=</span> <span class="string">&#x27;女&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="四、-DQL：玩转数据查询（核心）"><a href="#四、-DQL：玩转数据查询（核心）" class="headerlink" title="四、 DQL：玩转数据查询（核心）"></a>四、 DQL：玩转数据查询（核心）</h2><p>查询语句的编写顺序为：<code>SELECT</code> -&gt; <code>FROM</code> -&gt; <code>WHERE</code> -&gt; <code>GROUP BY</code> -&gt; <code>HAVING</code> -&gt; <code>ORDER BY</code> -&gt; <code>LIMIT</code>。</p>
+<h3 id="1-基础与条件查询"><a href="#1-基础与条件查询" class="headerlink" title="1. 基础与条件查询"></a>1. 基础与条件查询</h3><ul>
+<li><strong>去重</strong>: <code>SELECT DISTINCT address FROM emp;</code></li>
+<li><strong>模糊匹配</strong>: <code>LIKE</code>（<code>_</code> 匹配单个字符，<code>%</code> 匹配任意个字符）。<ul>
+<li><em>示例</em>：查询姓名两个字的：<code>WHERE name LIKE &#39;__&#39;;</code></li>
+<li><em>示例</em>：查询身份证末尾是X的：<code>WHERE idcard LIKE &#39;%X&#39;;</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="2-聚合函数"><a href="#2-聚合函数" class="headerlink" title="2. 聚合函数"></a>2. 聚合函数</h3><p>常用：<code>COUNT</code> (总数), <code>MAX</code> (最大), <code>MIN</code> (最小), <code>AVG</code> (平均), <code>SUM</code> (求和)。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">FROM</span> emp; <span class="comment">-- 统计总员工数</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-分组查询-GROUP-BY"><a href="#3-分组查询-GROUP-BY" class="headerlink" title="3. 分组查询 (GROUP BY)"></a>3. 分组查询 (GROUP BY)</h3><p><strong>注意</strong>：<code>WHERE</code> 在分组前过滤，<code>HAVING</code> 在分组后过滤（可判断聚合函数）。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 统计各地址男、女员工数量</span></span><br><span class="line"><span class="keyword">SELECT</span> workaddress, gender, <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">FROM</span> emp <span class="keyword">GROUP</span> <span class="keyword">BY</span> workaddress, gender;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-排序与分页"><a href="#4-排序与分页" class="headerlink" title="4. 排序与分页"></a>4. 排序与分页</h3><ul>
+<li><strong>排序</strong>: <code>ORDER BY 字段1 ASC (升序), 字段2 DESC (降序);</code></li>
+<li><strong>分页</strong>: <code>LIMIT 起始索引, 查询记录数;</code>（起始索引 &#x3D; (页码 - 1) * 每页条数）。</li>
+</ul>
+<hr>
+<h2 id="五、-常用内置函数"><a href="#五、-常用内置函数" class="headerlink" title="五、 常用内置函数"></a>五、 常用内置函数</h2><h3 id="1-字符串函数"><a href="#1-字符串函数" class="headerlink" title="1. 字符串函数"></a>1. 字符串函数</h3><ul>
+<li><code>CONCAT(s1, s2)</code>: 拼接。</li>
+<li><code>LPAD / RPAD</code>: 左右填充（常用于补齐工号）。</li>
+<li><code>SUBSTRING(str, start, len)</code>: 截取（索引从1开始）。</li>
+</ul>
+<h3 id="2-数值函数"><a href="#2-数值函数" class="headerlink" title="2. 数值函数"></a>2. 数值函数</h3><ul>
+<li><code>CEIL(x)</code>: 向上取整；<code>FLOOR(x)</code>: 向下取整。</li>
+<li><code>ROUND(x, y)</code>: 四舍五入保留 y 位。</li>
+</ul>
+<h3 id="3-日期函数"><a href="#3-日期函数" class="headerlink" title="3. 日期函数"></a>3. 日期函数</h3><ul>
+<li><code>CURDATE()</code>, <code>NOW()</code>: 获取当前日期、时间。</li>
+<li><code>DATEDIFF(d1, d2)</code>: 日期差。</li>
+</ul>
+<h3 id="4-流程函数"><a href="#4-流程函数" class="headerlink" title="4. 流程函数"></a>4. 流程函数</h3><ul>
+<li><code>IF(val, t, f)</code>: 三元运算。</li>
+<li><code>CASE WHEN ... THEN ... ELSE ... END</code>: 条件分支。</li>
+</ul>
+<hr>
+<h2 id="六、-约束与多表关联"><a href="#六、-约束与多表关联" class="headerlink" title="六、 约束与多表关联"></a>六、 约束与多表关联</h2><h3 id="1-约束分类"><a href="#1-约束分类" class="headerlink" title="1. 约束分类"></a>1. 约束分类</h3><ul>
+<li><code>NOT NULL</code> (非空), <code>UNIQUE</code> (唯一), <code>PRIMARY KEY</code> (主键), <code>DEFAULT</code> (默认值), <code>CHECK</code> (检查), <code>FOREIGN KEY</code> (外键)。</li>
+</ul>
+<h3 id="2-多表查询"><a href="#2-多表查询" class="headerlink" title="2. 多表查询"></a>2. 多表查询</h3><ul>
+<li><strong>内连接</strong>: <code>SELECT ... FROM A INNER JOIN B ON A.id = B.a_id;</code></li>
+<li><strong>外连接</strong>: <code>LEFT JOIN</code> (左表全显示) &#x2F; <code>RIGHT JOIN</code> (右表全显示)。</li>
+<li><strong>自连接</strong>: 自己连自己，必须起别名。<ul>
+<li><code>SELECT a.name, b.name FROM emp a JOIN emp b ON a.managerid = b.id;</code></li>
+</ul>
+</li>
+<li><strong>联合查询 (UNION)</strong>: 合并结果集（<code>UNION ALL</code> 不去重，<code>UNION</code> 去重）。</li>
+</ul>
+<h3 id="3-子查询"><a href="#3-子查询" class="headerlink" title="3. 子查询"></a>3. 子查询</h3><p>根据返回结果分为：</p>
+<ul>
+<li><strong>标量子查询</strong>（单行单列）：<code>WHERE id = (SELECT id ...)</code></li>
+<li><strong>列子查询</strong>（一列多行）：常用 <code>IN</code>, <code>ANY</code>, <code>ALL</code>。</li>
+<li><strong>行子查询</strong>（一行多列）：<code>WHERE (salary, managerid) = (SELECT ...)</code></li>
+<li><strong>表子查询</strong>（多行多列）：常放在 <code>FROM</code> 后作为临时表。</li>
+</ul>
+<hr>
+<h2 id="七、-事务管理-Transaction"><a href="#七、-事务管理-Transaction" class="headerlink" title="七、 事务管理 (Transaction)"></a>七、 事务管理 (Transaction)</h2><p>事务是一组操作的集合，必须作为一个整体执行。</p>
+<h3 id="1-事务控制"><a href="#1-事务控制" class="headerlink" title="1. 事务控制"></a>1. 事务控制</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">START</span> TRANSACTION; <span class="comment">-- 开启事务</span></span><br><span class="line"><span class="comment">-- SQL 操作...</span></span><br><span class="line"><span class="keyword">COMMIT</span>;            <span class="comment">-- 提交（成功后永久保存）</span></span><br><span class="line"><span class="keyword">ROLLBACK</span>;          <span class="comment">-- 回滚（报错后撤回所有操作）</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-四大特性-ACID"><a href="#2-四大特性-ACID" class="headerlink" title="2. 四大特性 (ACID)"></a>2. 四大特性 (ACID)</h3><ol>
+<li><strong>原子性 (Atomicity)</strong>: 要么全部成功，要么全部失败。</li>
+<li><strong>一致性 (Consistency)</strong>: 事务完成后数据状态保持一致。</li>
+<li><strong>隔离性 (Isolation)</strong>: 并发事务互不干扰。</li>
+<li><strong>持久性 (Durability)</strong>: 一旦提交，改变是永久的。</li>
+</ol>
+<h3 id="3-并发事务问题与隔离级别"><a href="#3-并发事务问题与隔离级别" class="headerlink" title="3. 并发事务问题与隔离级别"></a>3. 并发事务问题与隔离级别</h3><ul>
+<li><strong>问题</strong>: 脏读（读到未提交）、不可重复读（两次读到数据不同）、幻读（查询没记录但插入报错）。</li>
+<li><strong>隔离级别</strong>:<table>
+<thead>
+<tr>
+<th align="left">隔离级别</th>
+<th align="left">脏读</th>
+<th align="left">不可重复读</th>
+<th align="left">幻读</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">Read Uncommitted</td>
+<td align="left">会</td>
+<td align="left">会</td>
+<td align="left">会</td>
+</tr>
+<tr>
+<td align="left">Read Committed</td>
+<td align="left">不会</td>
+<td align="left">会</td>
+<td align="left">会</td>
+</tr>
+<tr>
+<td align="left">Repeatable Read (MySQL默认)</td>
+<td align="left">不会</td>
+<td align="left">不会</td>
+<td align="left">会</td>
+</tr>
+<tr>
+<td align="left">Serializable</td>
+<td align="left">不会</td>
+<td align="left">不会</td>
+<td align="left">不会</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+<hr>
+<blockquote>
+<p><strong>结语</strong>：掌握这些基础，你已经具备了日常开发中 80% 的数据库处理能力。持续进阶建议学习索引优化、存储过程以及数据库集群部署。</p>
+</blockquote>
+
+        
+        <br />
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+        <div id="lv-container"></div>
+        <div class="giscus"></div>
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+
+        
+
+        
+
+        
+
+        
+
+    </ul>
+    
+    <p>
+        <span id="busuanzi_container_site_pv">
+            <span id="busuanzi_value_site_pv"></span>PV
+        </span>
+        <span id="busuanzi_container_site_uv">
+            <span id="busuanzi_value_site_uv"></span>UV
+        </span>
+        Created By <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>  Theme <a target="_blank" rel="noopener" href="https://github.com/aircloud/hexo-theme-aircloud">AirCloud</a></p>
+</footer>
+
+
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = ""
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="/js/index.js"></script>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+    <script src="https://giscus.app/client.js"
+    data-repo="zzrve7/zzrve7.github.io"
+    data-repo-id="R_kgDOQnRIeA"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOQnRIeM4C5nXg"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="bottom"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    crossorigin="anonymous"
+    async>
+</script>
+
+
+
+
+</html>

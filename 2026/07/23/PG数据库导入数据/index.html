@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang=zh-CN>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:description" content="">
+    <meta property="og:type" content="website">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        大批量导入数据 - undefined
+        
+    </title>
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/aircloud.css">
+
+    
+<link rel="stylesheet" href="/css/gitment.css">
+
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_28hi1hpxx24.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i> 关山难越，谁悲失路之人 </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar ">
+            <img src="/img/avatar.jpg" />
+        </div>
+        <div class="name">
+            <i>zzrve7</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li >
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li >
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li >
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li >
+                <a href="/collect/">
+                    <i class="iconfont icon-shoucang1"></i>
+                    <span>收藏</span>
+                </a>
+            </li>
+            <li >
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%A0%E7%9A%84%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%85%A5%E4%BB%8E-500%E6%9D%A1-%E5%88%86-%E6%8F%90%E5%8D%87%E5%88%B0%E4%BA%86%E6%95%B0%E4%B8%87%E6%9D%A1-%E7%A7%92%EF%BC%9F"><span class="toc-text">深度解析：为什么你的数据导入从 500条&#x2F;分 提升到了数万条&#x2F;秒？</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E7%8E%B0%E8%B1%A1%E6%8F%8F%E8%BF%B0"><span class="toc-text">1. 现象描述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%B7%B1%E5%BA%A6%E5%88%86%E6%9E%90%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88%E6%96%B9%E6%A1%88-B-%E6%9B%B4%E5%BF%AB%EF%BC%9F"><span class="toc-text">2. 深度分析：为什么方案 B 更快？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E5%9B%A0%E4%B8%80%EF%BC%9A%E6%9E%81%E4%BD%8E%E7%9A%84%E5%AF%B9%E8%B1%A1%E5%86%85%E5%AD%98%E5%BC%80%E9%94%80-Reduced-GC-Pressure"><span class="toc-text">原因一：极低的对象内存开销 (Reduced GC Pressure)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E5%9B%A0%E4%BA%8C%EF%BC%9A%E7%AE%80%E5%8C%96%E7%9A%84%E6%95%B0%E6%8D%AE%E8%BD%AC%E6%8D%A2%E9%93%BE%E8%B7%AF-Zero-Redundancy-Pipeline"><span class="toc-text">原因二：简化的数据转换链路 (Zero-Redundancy Pipeline)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E5%9B%A0%E4%B8%89%EF%BC%9AJdbcTemplate-%E6%89%B9%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6%E7%9A%84%E5%B7%AE%E5%BC%82"><span class="toc-text">原因三：JdbcTemplate 批处理机制的差异</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E5%9B%A0%E5%9B%9B%EF%BC%9A%E5%BA%95%E5%B1%82-IO-%E4%B8%8E%E5%AD%97%E7%AC%A6%E5%A4%84%E7%90%86"><span class="toc-text">原因四：底层 IO 与字符处理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E8%BF%9B%E9%98%B6%E4%BC%98%E5%8C%96%EF%BC%9A%E8%BF%98%E8%83%BD%E6%9B%B4%E5%BF%AB%E5%90%97%EF%BC%9F"><span class="toc-text">3. 进阶优化：还能更快吗？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%95%B0%E6%8D%AE%E5%BA%93-URL-%E5%A2%9E%E5%8A%A0%E9%87%8D%E5%86%99%E5%8F%82%E6%95%B0-%E6%9C%80%E9%87%8D%E8%A6%81"><span class="toc-text">1. 数据库 URL 增加重写参数 (最重要)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E9%80%82%E5%BD%93%E7%9A%84-BatchSize"><span class="toc-text">2. 适当的 BatchSize</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E7%A6%81%E7%94%A8%E4%BA%8B%E5%8A%A1%E6%97%A5%E5%BF%97%E6%88%96%E8%87%AA%E5%8A%A8%E6%8F%90%E4%BA%A4"><span class="toc-text">3. 禁用事务日志或自动提交</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E6%80%BB%E7%BB%93%EF%BC%9A%E9%AB%98%E6%80%A7%E8%83%BD%E5%AF%BC%E5%85%A5%E5%87%86%E5%88%99"><span class="toc-text">4. 总结：高性能导入准则</span></a></li></ol></li></ol>
+</div>
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-bg" id="search-bg"></div>
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input"/>
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+
+        <div class="index-about-mobile">
+            <i> 关山难越，谁悲失路之人 </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        大批量导入数据
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2026-07-23 11:50:11</span></span>
+        
+        <span class="attr">标签：/
+        
+        <a class="tag" href="/tags/#-PG数据库" title="-PG数据库">-PG数据库</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+</span>
+    </div>
+    <div class="post-content ">
+        <h1 id="深度解析：为什么你的数据导入从-500条-分-提升到了数万条-秒？"><a href="#深度解析：为什么你的数据导入从-500条-分-提升到了数万条-秒？" class="headerlink" title="深度解析：为什么你的数据导入从 500条&#x2F;分 提升到了数万条&#x2F;秒？"></a>深度解析：为什么你的数据导入从 500条&#x2F;分 提升到了数万条&#x2F;秒？</h1><p>在处理 NOC（网络操作中心）海量数据导入任务时，开发者常常会遇到性能瓶颈。同样的 Spring <code>JdbcTemplate</code>，为什么一种写法每分钟只能处理几百条，而另一种写法却能实现“秒级导入”？</p>
+<p>本文将通过对比两种实现方案，深入剖析 Java 数据入库的性能本质。</p>
+<h2 id="1-现象描述"><a href="#1-现象描述" class="headerlink" title="1. 现象描述"></a>1. 现象描述</h2><ul>
+<li><strong>方案 A（慢）：</strong> 使用实体类（POJO）承载数据，在 <code>batchUpdate</code> 的回调函数中逐个字段 <code>ps.setXxx()</code>。</li>
+<li><strong>方案 B（快）：</strong> 在解析文件时直接组装 <code>Object[]</code> 数组，直接调用 <code>jdbcTemplate.batchUpdate(sql, buffer)</code>。</li>
+</ul>
+<p><strong>结果对比：</strong> 方案 A 在大数据量下极其缓慢（约 500 条&#x2F;分）；方案 B 性能提升数十倍甚至上百倍。</p>
+<hr>
+<h2 id="2-深度分析：为什么方案-B-更快？"><a href="#2-深度分析：为什么方案-B-更快？" class="headerlink" title="2. 深度分析：为什么方案 B 更快？"></a>2. 深度分析：为什么方案 B 更快？</h2><h3 id="原因一：极低的对象内存开销-Reduced-GC-Pressure"><a href="#原因一：极低的对象内存开销-Reduced-GC-Pressure" class="headerlink" title="原因一：极低的对象内存开销 (Reduced GC Pressure)"></a>原因一：极低的对象内存开销 (Reduced GC Pressure)</h3><p><strong>方案 A 的逻辑：</strong></p>
+<ol>
+<li>读取一行字符串。</li>
+<li>解析字符串并实例化一个 <code>TabNocOpticAnalysis</code> 对象。</li>
+<li>将对象存入 <code>List</code> 集合。</li>
+<li>在插入时，从对象中取出值赋给 <code>PreparedStatement</code>。</li>
+</ol>
+<p><strong>问题所在：</strong><br>每一个数据行都对应一个厚重的 POJO 对象。如果你有 100 万行数据，JVM 就要频繁创建和销毁 100 万个对象。这会造成：</p>
+<ul>
+<li><strong>内存占用高：</strong> 对象头、属性字段、对齐填充都会占用额外内存。</li>
+<li><strong>GC 频繁：</strong> 这种短命的大量对象会频繁触发 Young GC，甚至导致 Stop-The-World，严重拖慢主线程速度。</li>
+</ul>
+<p><strong>方案 B 的改进：</strong><br>直接使用 <code>Object[]</code>。数组是 Java 中最轻量级的数据结构之一。它省去了 POJO 类的定义和实例化开销，直接存储原始引用，对垃圾回收器（GC）非常友好。</p>
+<h3 id="原因二：简化的数据转换链路-Zero-Redundancy-Pipeline"><a href="#原因二：简化的数据转换链路-Zero-Redundancy-Pipeline" class="headerlink" title="原因二：简化的数据转换链路 (Zero-Redundancy Pipeline)"></a>原因二：简化的数据转换链路 (Zero-Redundancy Pipeline)</h3><p><strong>方案 A 的数据流向：</strong><br><code>CSV文本</code> -&gt; <code>String[] 数组</code> -&gt; <code>POJO 实体</code> -&gt; <code>PreparedStatement 参数</code></p>
+<p><strong>方案 B 的数据流向：</strong><br><code>CSV文本</code> -&gt; <code>Object[] 数组</code> -&gt; <code>PreparedStatement 参数</code></p>
+<p><strong>对比：</strong><br>方案 B 减掉了一个中间环节。方案 A 中复杂的映射逻辑（Getter&#x2F;Setter）在处理数十万条数据时，累计的 CPU 耗时非常可观。方案 B 在解析文件的一刻就已经把数据准备成了数据库需要的“参数矩阵”，真正做到了“解析即就绪”。</p>
+<h3 id="原因三：JdbcTemplate-批处理机制的差异"><a href="#原因三：JdbcTemplate-批处理机制的差异" class="headerlink" title="原因三：JdbcTemplate 批处理机制的差异"></a>原因三：JdbcTemplate 批处理机制的差异</h3><p>这是性能差异的<strong>核心技术点</strong>。</p>
+<ul>
+<li><p><strong>方案 A 使用的方法：</strong> <code>batchUpdate(sql, dataList, chunkSize, setter)</code><br>这种方式虽然也是批处理，但它在内部会频繁回调你定义的 <code>ParameterizedPreparedStatementSetter</code> 匿名函数。在高并发或大数据量下，频繁的匿名函数调用和参数绑定逻辑会产生额外的 CPU 开销。</p>
+</li>
+<li><p><strong>方案 B 使用的方法：</strong> <code>batchUpdate(sql, List&lt;Object[]&gt;)</code><br>这是 JDBC 最底层的 <code>addBatch()</code> 的直接封装。Spring 内部对这种模式做了极致优化，它能直接将 <code>Object[]</code> 中的元素刷入驱动层的缓冲区。对于数据库驱动（如 PostgreSQL 或 MySQL）来说，这种简单的数组结构最容易被转化为高效的批量报文。</p>
+</li>
+</ul>
+<h3 id="原因四：底层-IO-与字符处理"><a href="#原因四：底层-IO-与字符处理" class="headerlink" title="原因四：底层 IO 与字符处理"></a>原因四：底层 IO 与字符处理</h3><ul>
+<li><strong>字符集优化：</strong> 方案 B 显式指定了 <code>StandardCharsets.UTF_8</code>。如果不指定，系统会使用 OS 默认编码（可能是 GBK），这涉及到额外的编码转换计算。</li>
+<li><strong>流处理模式：</strong> 方案 B 使用 <code>InputStreamReader</code> 配合 <code>BufferedReader</code>，并直接在解析循环中通过 <code>Consumer</code> 回调驱动插入。这形成了一个<strong>生产-消费流</strong>，内存中永远只保留一个 batchSize 的数据，极大地压低了内存水位线。</li>
+</ul>
+<hr>
+<h2 id="3-进阶优化：还能更快吗？"><a href="#3-进阶优化：还能更快吗？" class="headerlink" title="3. 进阶优化：还能更快吗？"></a>3. 进阶优化：还能更快吗？</h2><p>如果你已经切换到了 <code>Object[]</code> 批处理，但还想榨干最后一点性能，可以考虑以下几点：</p>
+<h3 id="1-数据库-URL-增加重写参数-最重要"><a href="#1-数据库-URL-增加重写参数-最重要" class="headerlink" title="1. 数据库 URL 增加重写参数 (最重要)"></a>1. 数据库 URL 增加重写参数 (最重要)</h3><p>如果你使用的是 <strong>PostgreSQL</strong>，请在 JDBC 连接串中添加：<br><code>?reWriteBatchedInserts=true</code><br>这会将成百上千条 <code>INSERT</code> 语句合并成一条 <code>INSERT ... VALUES (...), (...), ...</code>，性能通常会有 5-10 倍的飞跃。</p>
+<h3 id="2-适当的-BatchSize"><a href="#2-适当的-BatchSize" class="headerlink" title="2. 适当的 BatchSize"></a>2. 适当的 BatchSize</h3><p>代码中使用的 <code>batchSize = 500</code> 是一个保守且安全的值。在内存允许的情况下，可以尝试增加到 <code>1000</code> 或 <code>2000</code>，但超过 <code>5000</code> 后收益会递减，且可能导致数据库死锁风险增加。</p>
+<h3 id="3-禁用事务日志或自动提交"><a href="#3-禁用事务日志或自动提交" class="headerlink" title="3. 禁用事务日志或自动提交"></a>3. 禁用事务日志或自动提交</h3><p>确保整个批次是在同一个事务中提交的（代码中已通过 <code>jdbcTemplate.batchUpdate</code> 实现），这避免了数据库每插入一行就写一次磁盘日志的开销。</p>
+<hr>
+<h2 id="4-总结：高性能导入准则"><a href="#4-总结：高性能导入准则" class="headerlink" title="4. 总结：高性能导入准则"></a>4. 总结：高性能导入准则</h2><ol>
+<li><strong>能用数组不用对象：</strong> 绕过 POJO，减少内存垃圾。</li>
+<li><strong>流式解析：</strong> 不要一次性读取整个文件，边读边存。</li>
+<li><strong>减少映射：</strong> 从 CSV 到 SQL 参数的路径越短越好。</li>
+<li><strong>利用驱动特性：</strong> 开启 URL 上的 <code>reWriteBatchedInserts</code>。</li>
+</ol>
+<p><strong>一句话总结：</strong> 方案 B 成功的秘诀在于**“克制”**——克制了创建对象的欲望，缩短了数据流转的距离，从而换取了性能的爆发。</p>
+
+        
+        <br />
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+        <div id="lv-container"></div>
+        <div class="giscus"></div>
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+
+        
+
+        
+
+        
+
+        
+
+    </ul>
+    
+    <p>
+        <span id="busuanzi_container_site_pv">
+            <span id="busuanzi_value_site_pv"></span>PV
+        </span>
+        <span id="busuanzi_container_site_uv">
+            <span id="busuanzi_value_site_uv"></span>UV
+        </span>
+        Created By <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>  Theme <a target="_blank" rel="noopener" href="https://github.com/aircloud/hexo-theme-aircloud">AirCloud</a></p>
+</footer>
+
+
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = ""
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="/js/index.js"></script>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+    <script src="https://giscus.app/client.js"
+    data-repo="zzrve7/zzrve7.github.io"
+    data-repo-id="R_kgDOQnRIeA"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOQnRIeM4C5nXg"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="bottom"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    crossorigin="anonymous"
+    async>
+</script>
+
+
+
+
+</html>

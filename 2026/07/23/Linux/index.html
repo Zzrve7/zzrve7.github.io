@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang=zh-CN>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:description" content="">
+    <meta property="og:type" content="website">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        Linux 服务器 - undefined
+        
+    </title>
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/aircloud.css">
+
+    
+<link rel="stylesheet" href="/css/gitment.css">
+
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_28hi1hpxx24.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i> 关山难越，谁悲失路之人 </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar ">
+            <img src="/img/avatar.jpg" />
+        </div>
+        <div class="name">
+            <i>zzrve7</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li >
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li >
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li >
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li >
+                <a href="/collect/">
+                    <i class="iconfont icon-shoucang1"></i>
+                    <span>收藏</span>
+                </a>
+            </li>
+            <li >
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81-%E8%AE%A4%E8%AF%86-Linux-%E7%9A%84%E2%80%9C%E5%AE%B6%E8%B0%B1%E2%80%9D%EF%BC%9A%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84"><span class="toc-text">一、 认识 Linux 的“家谱”：目录结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81-%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C%E4%B8%8E%E5%BF%AB%E6%8D%B7%E6%8A%80%E5%B7%A7"><span class="toc-text">二、 基础操作与快捷技巧</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E8%8E%B7%E5%8F%96%E6%9C%8D%E5%8A%A1%E5%99%A8-IP"><span class="toc-text">1. 获取服务器 IP</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%95%88%E7%8E%87%E4%B8%89%E5%AE%9D"><span class="toc-text">2. 效率三宝</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81-%E6%96%87%E4%BB%B6%E4%B8%8E%E7%9B%AE%E5%BD%95%E7%AE%A1%E7%90%86%EF%BC%88%E6%A0%B8%E5%BF%83%E6%93%8D%E4%BD%9C%EF%BC%89"><span class="toc-text">三、 文件与目录管理（核心操作）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E8%B7%AF%E5%BE%84%E5%AF%BC%E8%88%AA"><span class="toc-text">1. 路径导航</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5"><span class="toc-text">2. 增删改查</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81-%E6%96%87%E6%9C%AC%E6%9F%A5%E7%9C%8B%E4%B8%8E%E6%90%9C%E7%B4%A2%EF%BC%9A%E6%97%A5%E5%BF%97%E7%9B%91%E6%8E%A7%E7%A5%9E%E5%99%A8"><span class="toc-text">四、 文本查看与搜索：日志监控神器</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%9F%A5%E7%9C%8B%E5%86%85%E5%AE%B9"><span class="toc-text">1. 查看内容</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%90%9C%E7%B4%A2%E4%B8%8E%E8%BF%87%E6%BB%A4%EF%BC%88%E7%AE%A1%E9%81%93%E7%AC%A6%EF%BC%89"><span class="toc-text">2. 搜索与过滤（管道符）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81-%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%AB%AF%E5%8F%A3%E7%AE%A1%E7%90%86%EF%BC%9A%E6%8E%8C%E6%8E%A7%E7%B3%BB%E7%BB%9F%E8%BF%90%E8%A1%8C%E6%83%85%E5%86%B5"><span class="toc-text">五、 进程与端口管理：掌控系统运行情况</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E8%BF%9B%E7%A8%8B%E7%9B%91%E6%8E%A7"><span class="toc-text">1. 进程监控</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%AB%AF%E5%8F%A3%E4%B8%8E%E7%BD%91%E7%BB%9C"><span class="toc-text">2. 端口与网络</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81-%E6%9D%83%E9%99%90%E4%B8%8E%E7%94%A8%E6%88%B7%E7%AE%A1%E7%90%86"><span class="toc-text">六、 权限与用户管理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E4%BF%AE%E6%94%B9%E6%9D%83%E9%99%90-chmod"><span class="toc-text">1. 修改权限 (chmod)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%94%A8%E6%88%B7%E5%88%87%E6%8D%A2"><span class="toc-text">2. 用户切换</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81-%E5%8E%8B%E7%BC%A9%E3%80%81%E9%93%BE%E6%8E%A5%E4%B8%8E%E6%9F%A5%E6%89%BE"><span class="toc-text">七、 压缩、链接与查找</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%8E%8B%E7%BC%A9%E8%A7%A3%E5%8E%8B-tar"><span class="toc-text">1. 压缩解压 (tar)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%9F%A5%E6%89%BE%E6%96%87%E4%BB%B6-find"><span class="toc-text">2. 查找文件 (find)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E8%BD%AF%E9%93%BE%E6%8E%A5-ln"><span class="toc-text">3. 软链接 (ln)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E3%80%81-%E6%96%87%E6%9C%AC%E7%BC%96%E8%BE%91%E4%B8%8E%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85"><span class="toc-text">八、 文本编辑与软件安装</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-Vi-Vim-%E7%BC%96%E8%BE%91%E5%99%A8"><span class="toc-text">1. Vi&#x2F;Vim 编辑器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E8%BD%AF%E4%BB%B6%E5%8C%85%E7%AE%A1%E7%90%86-Yum"><span class="toc-text">2. 软件包管理 (Yum)</span></a></li></ol></li></ol>
+</div>
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-bg" id="search-bg"></div>
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input"/>
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+
+        <div class="index-about-mobile">
+            <i> 关山难越，谁悲失路之人 </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        Linux 服务器
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2026-07-23 12:52:11</span></span>
+        
+        <span class="attr">标签：/
+        
+        <a class="tag" href="/tags/#Linux" title="Linux">Linux</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+</span>
+    </div>
+    <div class="post-content ">
+        <h2 id="一、-认识-Linux-的“家谱”：目录结构"><a href="#一、-认识-Linux-的“家谱”：目录结构" class="headerlink" title="一、 认识 Linux 的“家谱”：目录结构"></a>一、 认识 Linux 的“家谱”：目录结构</h2><p>Linux 的世界里“一切皆文件”，了解目录结构是第一步：</p>
+<ul>
+<li><strong><code>/</code></strong>：根目录，所有路径的起点。</li>
+<li><strong><code>/root</code></strong>：超级管理员 root 的家目录。</li>
+<li><strong><code>/home</code></strong>：普通用户的家目录。</li>
+<li><strong><code>/usr</code></strong>：系统应用程序存放地（类似 Windows 的 Program Files）。</li>
+<li><strong><code>/etc</code></strong>：系统及软件的配置文件存放目录。</li>
+<li><strong><code>/var</code></strong>：存放经常变化的文件，如<strong>日志文件</strong>。</li>
+</ul>
+<hr>
+<h2 id="二、-基础操作与快捷技巧"><a href="#二、-基础操作与快捷技巧" class="headerlink" title="二、 基础操作与快捷技巧"></a>二、 基础操作与快捷技巧</h2><h3 id="1-获取服务器-IP"><a href="#1-获取服务器-IP" class="headerlink" title="1. 获取服务器 IP"></a>1. 获取服务器 IP</h3><ul>
+<li>命令：<code>ifconfig</code> 或 <code>ip addr</code>。</li>
+</ul>
+<h3 id="2-效率三宝"><a href="#2-效率三宝" class="headerlink" title="2. 效率三宝"></a>2. 效率三宝</h3><ul>
+<li><strong>Tab 键</strong>：命令或路径自动补全（最常用）。</li>
+<li><strong>上下方向键</strong>：快速调回之前输入过的历史命令。</li>
+<li><strong>Ctrl + C</strong>：强制停止当前正在运行的程序&#x2F;命令。</li>
+</ul>
+<hr>
+<h2 id="三、-文件与目录管理（核心操作）"><a href="#三、-文件与目录管理（核心操作）" class="headerlink" title="三、 文件与目录管理（核心操作）"></a>三、 文件与目录管理（核心操作）</h2><h3 id="1-路径导航"><a href="#1-路径导航" class="headerlink" title="1. 路径导航"></a>1. 路径导航</h3><ul>
+<li><code>pwd</code>：查看当前所在位置的绝对路径。</li>
+<li><code>ls</code>：列出当前目录下的文件（<code>ls -al</code> 查看详细及隐藏文件）。</li>
+<li><code>cd</code>：切换目录。<ul>
+<li><code>cd ..</code> 返回上一层；<code>cd ~</code> 回到家目录。</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-增删改查"><a href="#2-增删改查" class="headerlink" title="2. 增删改查"></a>2. 增删改查</h3><ul>
+<li><strong>创建</strong>：<code>mkdir</code> 创建文件夹，<code>touch</code> 创建空文件。</li>
+<li><strong>复制 (cp)</strong>：<ul>
+<li><code>cp aa.txt adir/</code> (复制文件)</li>
+<li><code>cp -r bdir/ cdir/</code> (复制文件夹，<strong>必须带 -r</strong>)</li>
+</ul>
+</li>
+<li><strong>移动&#x2F;改名 (mv)</strong>：<code>mv aa.txt bdir/</code>。</li>
+<li><strong>删除 (rm)</strong>：<ul>
+<li><code>rm -i file</code> (删除前提示)</li>
+<li><code>rm -rf *</code> (<strong>危险！</strong> 递归强制删除当前所有文件)</li>
+<li><strong>禁忌命令</strong>：<code>rm -rf /*</code> (删库跑路专用，严禁使用)。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="四、-文本查看与搜索：日志监控神器"><a href="#四、-文本查看与搜索：日志监控神器" class="headerlink" title="四、 文本查看与搜索：日志监控神器"></a>四、 文本查看与搜索：日志监控神器</h2><h3 id="1-查看内容"><a href="#1-查看内容" class="headerlink" title="1. 查看内容"></a>1. 查看内容</h3><ul>
+<li><code>cat</code>：一次性展示全部内容。</li>
+<li><code>more / less</code>：分屏查看长文件。</li>
+<li><code>head -n 15</code>：查看前 15 行。</li>
+<li><strong><code>tail -f log.txt</code></strong>：实时滚动查看日志（调试程序必备）。</li>
+</ul>
+<h3 id="2-搜索与过滤（管道符）"><a href="#2-搜索与过滤（管道符）" class="headerlink" title="2. 搜索与过滤（管道符）"></a>2. 搜索与过滤（管道符）</h3><ul>
+<li><strong><code>grep</code></strong>：文本搜索。</li>
+<li><strong><code>|</code> (管道符)</strong>：将前一个命令的结果交给后一个命令处理。<ul>
+<li><em>示例</em>：<code>ls -al /usr/bin | grep mysql</code> (在列表中查找包含 mysql 的项)。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="五、-进程与端口管理：掌控系统运行情况"><a href="#五、-进程与端口管理：掌控系统运行情况" class="headerlink" title="五、 进程与端口管理：掌控系统运行情况"></a>五、 进程与端口管理：掌控系统运行情况</h2><h3 id="1-进程监控"><a href="#1-进程监控" class="headerlink" title="1. 进程监控"></a>1. 进程监控</h3><ul>
+<li><code>ps -aux</code>：查看系统所有运行中的进程。</li>
+<li><code>top</code>：实时查看 CPU、内存占用情况（类似任务管理器）。</li>
+<li><strong>强杀进程</strong>：先用 <code>ps</code> 找 PID，再执行 <code>kill -9 &lt;PID&gt;</code>。</li>
+</ul>
+<h3 id="2-端口与网络"><a href="#2-端口与网络" class="headerlink" title="2. 端口与网络"></a>2. 端口与网络</h3><ul>
+<li><code>netstat -anptu | grep 端口号</code>：查看哪个程序占用了端口。</li>
+<li><code>lsof -i:端口号</code>：另一种查询端口占用的常用方法。</li>
+<li><strong>常见端口</strong>：SSH(22), HTTP(80), HTTPS(443), MySQL(3306)。</li>
+</ul>
+<hr>
+<h2 id="六、-权限与用户管理"><a href="#六、-权限与用户管理" class="headerlink" title="六、 权限与用户管理"></a>六、 权限与用户管理</h2><h3 id="1-修改权限-chmod"><a href="#1-修改权限-chmod" class="headerlink" title="1. 修改权限 (chmod)"></a>1. 修改权限 (chmod)</h3><p>Linux 权限分为：<strong>R(读:4), W(写:2), X(执行:1)</strong>。</p>
+<ul>
+<li><strong>数字法</strong>：<code>chmod 755 file</code> (拥有者全权，其余人可读可执行)。</li>
+<li><strong>字母法</strong>：<code>chmod u=rwx,g=rx,o=x file</code>。</li>
+</ul>
+<h3 id="2-用户切换"><a href="#2-用户切换" class="headerlink" title="2. 用户切换"></a>2. 用户切换</h3><ul>
+<li><code>whoami</code>：查看当前用户名。</li>
+<li><code>su -</code>：切换到 root 用户。</li>
+</ul>
+<hr>
+<h2 id="七、-压缩、链接与查找"><a href="#七、-压缩、链接与查找" class="headerlink" title="七、 压缩、链接与查找"></a>七、 压缩、链接与查找</h2><h3 id="1-压缩解压-tar"><a href="#1-压缩解压-tar" class="headerlink" title="1. 压缩解压 (tar)"></a>1. 压缩解压 (tar)</h3><ul>
+<li><strong>压缩</strong>：<code>tar -zcvf test.tar.gz ./test/</code></li>
+<li><strong>解压</strong>：<code>tar -zxvf test.tar.gz -C ./target/</code></li>
+</ul>
+<h3 id="2-查找文件-find"><a href="#2-查找文件-find" class="headerlink" title="2. 查找文件 (find)"></a>2. 查找文件 (find)</h3><ul>
+<li><code>find /home -name &quot;demo.txt&quot;</code>：在指定目录下按名称查找文件。</li>
+</ul>
+<h3 id="3-软链接-ln"><a href="#3-软链接-ln" class="headerlink" title="3. 软链接 (ln)"></a>3. 软链接 (ln)</h3><ul>
+<li><code>ln -s 原文件 快捷方式</code>：创建软链接（类似 Windows 快捷方式）。</li>
+</ul>
+<hr>
+<h2 id="八、-文本编辑与软件安装"><a href="#八、-文本编辑与软件安装" class="headerlink" title="八、 文本编辑与软件安装"></a>八、 文本编辑与软件安装</h2><h3 id="1-Vi-Vim-编辑器"><a href="#1-Vi-Vim-编辑器" class="headerlink" title="1. Vi&#x2F;Vim 编辑器"></a>1. Vi&#x2F;Vim 编辑器</h3><ol>
+<li>输入 <code>vi 文件名</code> 进入预览。</li>
+<li>按 <strong><code>i</code></strong> 进入编辑模式。</li>
+<li>编辑完按 <strong><code>Esc</code></strong> 退出编辑。</li>
+<li>输入 <strong><code>:wq</code></strong> 保存退出，输入 <strong><code>:q!</code></strong> 不保存强制退出。</li>
+</ol>
+<h3 id="2-软件包管理-Yum"><a href="#2-软件包管理-Yum" class="headerlink" title="2. 软件包管理 (Yum)"></a>2. 软件包管理 (Yum)</h3><ul>
+<li>安装软件：<code>yum install &lt;名称&gt;</code></li>
+<li>删除软件：<code>yum remove &lt;名称&gt;</code></li>
+<li>查找清单：<code>yum list</code></li>
+</ul>
+<hr>
+<blockquote>
+<p><strong>结语</strong>：Linux 的指令虽然繁多，但最常用的不过几十个。多在服务器上敲几遍，你会发现它比图形化界面更加高效、强大！</p>
+</blockquote>
+
+        
+        <br />
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+        <div id="lv-container"></div>
+        <div class="giscus"></div>
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+
+        
+
+        
+
+        
+
+        
+
+    </ul>
+    
+    <p>
+        <span id="busuanzi_container_site_pv">
+            <span id="busuanzi_value_site_pv"></span>PV
+        </span>
+        <span id="busuanzi_container_site_uv">
+            <span id="busuanzi_value_site_uv"></span>UV
+        </span>
+        Created By <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>  Theme <a target="_blank" rel="noopener" href="https://github.com/aircloud/hexo-theme-aircloud">AirCloud</a></p>
+</footer>
+
+
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = ""
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="/js/index.js"></script>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+    <script src="https://giscus.app/client.js"
+    data-repo="zzrve7/zzrve7.github.io"
+    data-repo-id="R_kgDOQnRIeA"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOQnRIeM4C5nXg"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="bottom"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    crossorigin="anonymous"
+    async>
+</script>
+
+
+
+
+</html>

@@ -104,7 +104,7 @@
     </div>
     
         <div id="toc" class="toc-article">
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-text">一、解决方案</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E9%98%B6%E6%AE%B5%EF%BC%9A%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E4%B8%8E%E5%B7%A5%E7%A8%8B%E5%8C%96%EF%BC%88%E7%AC%AC-1-2-%E5%91%A8%EF%BC%89%E2%80%94%E2%80%94-%E8%84%B1%E7%A6%BB%E8%88%92%E9%80%82%E5%8C%BA"><span class="toc-text">第一阶段：开发环境与工程化（第 1-2 周）—— 脱离舒适区</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E9%98%B6%E6%AE%B5%EF%BC%9A%E6%B7%B1%E5%BA%A6-CRUD-%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6%EF%BC%88%E7%AC%AC-3-4-%E5%91%A8%EF%BC%89%E2%80%94%E2%80%94-%E9%99%8D%E7%BB%B4%E6%89%93%E5%87%BB"><span class="toc-text">第二阶段：深度 CRUD 与数据库进阶（第 3-4 周）—— 降维打击</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E9%98%B6%E6%AE%B5%EF%BC%9A%E5%BC%95%E5%85%A5%E4%B8%AD%E9%97%B4%E4%BB%B6%E8%A7%A3%E5%86%B3%E5%A4%8D%E6%9D%82%E9%97%AE%E9%A2%98%EF%BC%88%E7%AC%AC-5-6-%E5%91%A8%EF%BC%89%E2%80%94%E2%80%94-%E6%A0%B8%E5%BF%83%E7%AB%9E%E4%BA%89%E5%8A%9B"><span class="toc-text">第三阶段：引入中间件解决复杂问题（第 5-6 周）—— 核心竞争力</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E9%98%B6%E6%AE%B5%EF%BC%9A%E7%9B%91%E6%8E%A7%E4%B8%8E%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7%EF%BC%88%E7%AC%AC-7-8-%E5%91%A8%EF%BC%89%E2%80%94%E2%80%94-%E6%9E%B6%E6%9E%84%E5%B8%88%E6%80%9D%E7%BB%B4"><span class="toc-text">第四阶段：监控与可观测性（第 7-8 周）—— 架构师思维</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93%E6%84%8F%E8%A7%81"><span class="toc-text">总结意见</span></a></li></ol>
 </div>
     
 </div>
@@ -154,7 +154,48 @@
 </span>
     </div>
     <div class="post-content ">
-        <h2 id="一、解决方案"><a href="#一、解决方案" class="headerlink" title="一、解决方案"></a>一、解决方案</h2><p>第一阶段：开发环境与工程化（第 1-2 周）—— 脱离舒适区<br>目标： 模拟真实生产环境。<br>任务：<br>切换 Linux 环境： 在 Windows 上安装 WSL2（Ubuntu） 或者 Docker。以后所有的数据库（MySQL）、中间件（Redis）必须跑在 Linux 容器里，通过命令行操作，而不是 Windows 安装包。<br>深入理解构建工具： 别只点 Maven 的打包按钮。去研究 pom.xml 里的依赖冲突怎么解决？如何配置多环境（开发、测试、生产）的 yml 文件？<br>收益： 让你具备基础的运维和排查能力，这是外包转自研的门槛。<br>第二阶段：深度 CRUD 与数据库进阶（第 3-4 周）—— 降维打击<br>目标： 你每天在公司写落库，那就在 Demo 里把落库做到极致。<br>任务：<br>SQL 优化： 别只会 save()。在 Demo 里造 100 万条数据，练习怎么写 SQL 能让查询从 5 秒变成 0.05 秒。学会看 Explain 执行计划。<br>分库分表： 尝试引入 Sharding-JDBC。哪怕只有一个表，也模拟一下数据量太大需要拆分的场景。<br>事务控制： 深入研究 @Transactional。什么时候会失效？分布式场景下怎么保证数据一致性？<br>收益： 让你在面试聊到“落库”时，不是在聊搬砖，而是在聊“数据架构优化”。<br>第三阶段：引入中间件解决复杂问题（第 5-6 周）—— 核心竞争力<br>目标： 摆脱“只会写接口”的标签。<br>任务：<br>缓存实战（Redis）： 给你的接口加上 Redis。不要只做查询缓存，去实现分布式锁（解决重复下单问题），去处理缓存击穿&#x2F;雪崩。<br>异步处理（消息队列）： 引入 RabbitMQ 或 Kafka。模拟一个场景：用户注册后，需要发邮件、发短信、加积分。不要同步写，用 MQ 异步解耦。<br>多线程应用： 在 Demo 里写一个多线程数据导入的功能。理解线程池的参数怎么配才不会把服务器压垮。<br>收益： 这是社招中级 Java 工程师的起步价。<br>第四阶段：监控与可观测性（第 7-8 周）—— 架构师思维<br>目标： 像架构师一样思考系统的稳定性。<br>任务：<br>日志规范： 引入 Logback，学习如何通过日志链路追踪（TraceID）快速定位一个跨越多个接口的报错。<br>参数调优： 尝试调整 JVM 参数，观察内存变化。学着用 Arthas 诊断工具查看 Linux 上运行的代码哪一行最慢。<br>接口安全： 别只写接口，给接口加限流（如 Sentinel），防止被刷爆。<br>收益： 展示你不仅会写代码，还能保障代码在生产环境稳健运行。<br>项目驱动学习： 既然你 Clone 了这个 Demo，请给它加功能。每加一个功能，都要问自己：“如果这个接口每秒有 1 万人访问，会崩在哪里？”<br>记录与总结： 把这二个月的每一个坑写成技术博客。</p>
+        <p><strong>两个月“职业竞争力提升”计划</strong>：</p>
+<h4 id="第一阶段：开发环境与工程化（第-1-2-周）——-脱离舒适区"><a href="#第一阶段：开发环境与工程化（第-1-2-周）——-脱离舒适区" class="headerlink" title="第一阶段：开发环境与工程化（第 1-2 周）—— 脱离舒适区"></a>第一阶段：开发环境与工程化（第 1-2 周）—— 脱离舒适区</h4><ul>
+<li><strong>目标：</strong> 模拟真实生产环境。</li>
+<li><strong>任务：</strong><ol>
+<li><strong>切换 Linux 环境：</strong> 在 Windows 上安装 <strong>WSL2（Ubuntu）</strong> 或者 Docker。以后所有的数据库（MySQL）、中间件（Redis）必须跑在 Linux 容器里，通过命令行操作，而不是 Windows 安装包。</li>
+<li><strong>深入理解构建工具：</strong> 别只点 Maven 的打包按钮。去研究 <code>pom.xml</code> 里的依赖冲突怎么解决？如何配置多环境（开发、测试、生产）的 <code>yml</code> 文件？</li>
+<li><strong>收益：</strong> 让你具备基础的运维和排查能力，这是外包转自研的门槛。</li>
+</ol>
+</li>
+</ul>
+<h4 id="第二阶段：深度-CRUD-与数据库进阶（第-3-4-周）——-降维打击"><a href="#第二阶段：深度-CRUD-与数据库进阶（第-3-4-周）——-降维打击" class="headerlink" title="第二阶段：深度 CRUD 与数据库进阶（第 3-4 周）—— 降维打击"></a>第二阶段：深度 CRUD 与数据库进阶（第 3-4 周）—— 降维打击</h4><ul>
+<li><strong>目标：</strong> 你每天在公司写落库，那就在 Demo 里把落库做到极致。</li>
+<li><strong>任务：</strong><ol>
+<li><strong>SQL 优化：</strong> 别只会 <code>save()</code>。在 Demo 里造 100 万条数据，练习怎么写 SQL 能让查询从 5 秒变成 0.05 秒。学会看 <strong>Explain 执行计划</strong>。</li>
+<li><strong>分库分表：</strong> 尝试引入 <strong>Sharding-JDBC</strong>。哪怕只有一个表，也模拟一下数据量太大需要拆分的场景。</li>
+<li><strong>事务控制：</strong> 深入研究 <code>@Transactional</code>。什么时候会失效？分布式场景下怎么保证数据一致性？</li>
+<li><strong>收益：</strong> 让你在面试聊到“落库”时，不是在聊搬砖，而是在聊“数据架构优化”。</li>
+</ol>
+</li>
+</ul>
+<h4 id="第三阶段：引入中间件解决复杂问题（第-5-6-周）——-核心竞争力"><a href="#第三阶段：引入中间件解决复杂问题（第-5-6-周）——-核心竞争力" class="headerlink" title="第三阶段：引入中间件解决复杂问题（第 5-6 周）—— 核心竞争力"></a>第三阶段：引入中间件解决复杂问题（第 5-6 周）—— 核心竞争力</h4><ul>
+<li><strong>目标：</strong> 摆脱“只会写接口”的标签。</li>
+<li><strong>任务：</strong><ol>
+<li><strong>缓存实战（Redis）：</strong> 给你的接口加上 Redis。不要只做查询缓存，去实现<strong>分布式锁</strong>（解决重复下单问题），去处理<strong>缓存击穿&#x2F;雪崩</strong>。</li>
+<li><strong>异步处理（消息队列）：</strong> 引入 RabbitMQ 或 Kafka。模拟一个场景：用户注册后，需要发邮件、发短信、加积分。不要同步写，用 MQ 异步解耦。</li>
+<li><strong>多线程应用：</strong> 在 Demo 里写一个多线程数据导入的功能。理解线程池的参数怎么配才不会把服务器压垮。</li>
+<li><strong>收益：</strong> 这是社招中级 Java 工程师的起步价。</li>
+</ol>
+</li>
+</ul>
+<h4 id="第四阶段：监控与可观测性（第-7-8-周）——-架构师思维"><a href="#第四阶段：监控与可观测性（第-7-8-周）——-架构师思维" class="headerlink" title="第四阶段：监控与可观测性（第 7-8 周）—— 架构师思维"></a>第四阶段：监控与可观测性（第 7-8 周）—— 架构师思维</h4><ul>
+<li><strong>目标：</strong> 像架构师一样思考系统的稳定性。</li>
+<li><strong>任务：</strong><ol>
+<li><strong>日志规范：</strong> 引入 Logback，学习如何通过日志链路追踪（TraceID）快速定位一个跨越多个接口的报错。</li>
+<li><strong>参数调优：</strong> 尝试调整 JVM 参数，观察内存变化。学着用 <strong>Arthas</strong> 诊断工具查看 Linux 上运行的代码哪一行最慢。</li>
+<li><strong>接口安全：</strong> 别只写接口，给接口加限流（如 Sentinel），防止被刷爆。</li>
+<li><strong>收益：</strong> 展示你不仅会写代码，还能保障代码在生产环境稳健运行。</li>
+</ol>
+</li>
+</ul>
+<hr>
+<h3 id="总结意见"><a href="#总结意见" class="headerlink" title="总结意见"></a>总结意见</h3><p>  <strong>项目驱动学习：</strong> 既然你 Clone 了这个 Demo，请给它加功能。每加一个功能，都要问自己：<strong>“如果这个接口每秒有 1 万人访问，会崩在哪里？”</strong></p>
 
         
         <br />

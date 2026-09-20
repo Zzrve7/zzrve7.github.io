@@ -104,7 +104,7 @@
     </div>
     
         <div id="toc" class="toc-article">
-    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%8E-Java-OOM-%E5%88%B0%E7%A8%B3%E5%AE%9A%E8%B7%91%E5%AE%8C-320-%E4%B8%87%E6%95%B0%E6%8D%AE%EF%BC%9A%E4%B8%80%E6%AC%A1-PostgreSQL-Java-%E6%89%B9%E5%A4%84%E7%90%86%E5%86%85%E5%AD%98%E9%97%AE%E9%A2%98%E7%9A%84%E5%AE%8C%E6%95%B4%E6%8E%92%E6%9F%A5%E4%B8%8E%E4%BC%98%E5%8C%96"><span class="toc-text">从 Java OOM 到稳定跑完 320 万数据：一次 PostgreSQL + Java 批处理内存问题的完整排查与优化</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E8%83%8C%E6%99%AF"><span class="toc-text">1. 背景</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-OOM-%E7%9A%84%E6%9C%80%E5%88%9D%E7%8E%B0%E8%B1%A1"><span class="toc-text">2. OOM 的最初现象</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-%E4%B8%BA%E4%BB%80%E4%B9%88-320-%E4%B8%87%E6%9D%A1%E6%95%B0%E6%8D%AE%E4%BC%9A%E8%BF%99%E4%B9%88%E5%90%83%E5%86%85%E5%AD%98%EF%BC%9F"><span class="toc-text">3. 为什么 320 万条数据会这么吃内存？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-%E7%AC%AC%E4%B8%80%E4%B8%AA%E9%94%99%E8%AF%AF%E8%AE%A4%E7%9F%A5%EF%BC%9A%E6%8A%8A-batch-clear-%E5%BD%93%E6%88%90%E2%80%9C%E9%87%8A%E6%94%BE%E5%85%A8%E9%83%A8%E5%86%85%E5%AD%98%E2%80%9D"><span class="toc-text">4. 第一个错误认知：把 batch.clear() 当成“释放全部内存”</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5-%E7%9C%9F%E6%AD%A3%E7%9A%84%E9%97%AE%E9%A2%98%E6%98%AF%E5%A4%A7%E9%9B%86%E5%90%88%E5%90%8C%E6%97%B6%E9%95%BF%E6%9C%9F%E5%AD%98%E6%B4%BB"><span class="toc-text">5. 真正的问题是大集合同时长期存活</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#6-%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%86%85%E5%AD%98%E6%97%A5%E5%BF%97%EF%BC%9A%E7%9C%9F%E6%AD%A3%E6%89%BE%E5%88%B0%E9%97%AE%E9%A2%98"><span class="toc-text">6. 第一次内存日志：真正找到问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#7-%E9%94%99%E8%AF%AF%E6%96%B9%E6%A1%88%E4%B8%80%EF%BC%9A%E7%9B%B4%E6%8E%A5%E5%88%9B%E5%BB%BA-5-%E4%B8%AA-Map"><span class="toc-text">7. 错误方案一：直接创建 5 个 Map</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#8-%E9%94%99%E8%AF%AF%E6%96%B9%E6%A1%88%E4%BA%8C%EF%BC%9A%E5%8F%AA%E6%8A%8A-row-null"><span class="toc-text">8. 错误方案二：只把 row &#x3D; null</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#9-%E7%9C%9F%E6%AD%A3%E6%9C%89%E6%95%88%E7%9A%84%E6%96%B9%E5%BC%8F%EF%BC%9A%E8%A7%A3%E9%99%A4-baseRows-%E5%AF%B9%E5%BD%93%E5%89%8D%E6%89%B9%E6%AC%A1%E7%9A%84"><span class="toc-text">9. 真正有效的方式：解除 baseRows 对当前批次的</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%8E-Java-OOM-%E5%88%B0%E7%A8%B3%E5%AE%9A%E8%B7%91%E5%AE%8C-320-%E4%B8%87%E6%95%B0%E6%8D%AE%EF%BC%9A%E4%B8%80%E6%AC%A1-PostgreSQL-Java-%E6%89%B9%E5%A4%84%E7%90%86%E5%86%85%E5%AD%98%E9%97%AE%E9%A2%98%E7%9A%84%E5%AE%8C%E6%95%B4%E6%8E%92%E6%9F%A5%E4%B8%8E%E4%BC%98%E5%8C%96"><span class="toc-text">从 Java OOM 到稳定跑完 320 万数据：一次 PostgreSQL + Java 批处理内存问题的完整排查与优化</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E8%83%8C%E6%99%AF"><span class="toc-text">1. 背景</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-OOM-%E7%9A%84%E6%9C%80%E5%88%9D%E7%8E%B0%E8%B1%A1"><span class="toc-text">2. OOM 的最初现象</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-%E4%B8%BA%E4%BB%80%E4%B9%88-320-%E4%B8%87%E6%9D%A1%E6%95%B0%E6%8D%AE%E4%BC%9A%E8%BF%99%E4%B9%88%E5%90%83%E5%86%85%E5%AD%98%EF%BC%9F"><span class="toc-text">3. 为什么 320 万条数据会这么吃内存？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-%E7%AC%AC%E4%B8%80%E4%B8%AA%E9%94%99%E8%AF%AF%E8%AE%A4%E7%9F%A5%EF%BC%9A%E6%8A%8A-batch-clear-%E5%BD%93%E6%88%90%E2%80%9C%E9%87%8A%E6%94%BE%E5%85%A8%E9%83%A8%E5%86%85%E5%AD%98%E2%80%9D"><span class="toc-text">4. 第一个错误认知：把 batch.clear() 当成“释放全部内存”</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5-%E7%9C%9F%E6%AD%A3%E7%9A%84%E9%97%AE%E9%A2%98%E6%98%AF%E5%A4%A7%E9%9B%86%E5%90%88%E5%90%8C%E6%97%B6%E9%95%BF%E6%9C%9F%E5%AD%98%E6%B4%BB"><span class="toc-text">5. 真正的问题是大集合同时长期存活</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#6-%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%86%85%E5%AD%98%E6%97%A5%E5%BF%97%EF%BC%9A%E7%9C%9F%E6%AD%A3%E6%89%BE%E5%88%B0%E9%97%AE%E9%A2%98"><span class="toc-text">6. 第一次内存日志：真正找到问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#7-%E9%94%99%E8%AF%AF%E6%96%B9%E6%A1%88%E4%B8%80%EF%BC%9A%E7%9B%B4%E6%8E%A5%E5%88%9B%E5%BB%BA-5-%E4%B8%AA-Map"><span class="toc-text">7. 错误方案一：直接创建 5 个 Map</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#8-%E9%94%99%E8%AF%AF%E6%96%B9%E6%A1%88%E4%BA%8C%EF%BC%9A%E5%8F%AA%E6%8A%8A-row-null"><span class="toc-text">8. 错误方案二：只把 row &#x3D; null</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#9-%E7%9C%9F%E6%AD%A3%E6%9C%89%E6%95%88%E7%9A%84%E6%96%B9%E5%BC%8F%EF%BC%9A%E8%A7%A3%E9%99%A4-baseRows-%E5%AF%B9%E5%BD%93%E5%89%8D%E6%89%B9%E6%AC%A1%E7%9A%84%E5%BC%95%E7%94%A8"><span class="toc-text">9. 真正有效的方式：解除 baseRows 对当前批次的引用</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#10-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8-set-null-%EF%BC%8C%E8%80%8C%E4%B8%8D%E6%98%AF-remove-%EF%BC%9F"><span class="toc-text">10. 为什么使用 set(null)，而不是 remove()？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#11-%E6%9C%80%E7%BB%88%E6%96%B9%E6%A1%88%EF%BC%9A%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3-%E5%8D%95-Map"><span class="toc-text">11. 最终方案：滑动窗口 + 单 Map</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#12-%E5%BD%93%E5%89%8D%E6%89%B9%E6%AC%A1%E6%9E%84%E5%BB%BA%E8%BF%87%E7%A8%8B"><span class="toc-text">12. 当前批次构建过程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#13-%E6%AF%8F%E6%89%B9%E6%95%B0%E6%8D%AE%E7%9A%84%E5%AE%8C%E6%95%B4%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B"><span class="toc-text">13. 每批数据的完整处理流程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#14-Entity-%E4%B9%9F%E4%B8%8D%E8%83%BD%E4%B8%80%E6%AC%A1%E5%88%9B%E5%BB%BA-320-%E4%B8%87%E6%9D%A1"><span class="toc-text">14. Entity 也不能一次创建 320 万条</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#15-%E5%B9%B6%E5%8F%91%E6%9F%A5%E8%AF%A2%E4%B9%9F%E4%B8%8D%E8%83%BD%E5%88%9B%E5%BB%BA%E5%87%A0%E5%8D%81%E4%B8%87%E4%B8%AA%E4%BB%BB%E5%8A%A1"><span class="toc-text">15. 并发查询也不能创建几十万个任务</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#16-%E4%B8%BA%E4%BB%80%E4%B9%88%E5%B9%B6%E5%8F%91%E4%BB%BB%E5%8A%A1%E7%BB%93%E6%9D%9F%E5%90%8E%E6%89%8D%E8%83%BD%E9%87%8A%E6%94%BE-Map%EF%BC%9F"><span class="toc-text">16. 为什么并发任务结束后才能释放 Map？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#17-%E6%9C%80%E7%BB%88%E9%87%8A%E6%94%BE%E5%BD%93%E5%89%8D%E6%89%B9%E6%AC%A1"><span class="toc-text">17. 最终释放当前批次</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#18-%E4%B8%80%E4%B8%AA%E9%9D%9E%E5%B8%B8%E9%87%8D%E8%A6%81%E7%9A%84%E6%8E%92%E6%9F%A5%E8%AF%AF%E5%8C%BA%EF%BC%9Aused-heap-%E7%AA%81%E7%84%B6%E5%8D%87%E9%AB%98-%E2%89%A0-%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F"><span class="toc-text">18. 一个非常重要的排查误区：used heap 突然升高 ≠ 内存泄漏</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#19-%E6%9C%80%E7%BB%88%E7%9C%9F%E5%AE%9E%E8%BF%90%E8%A1%8C%E7%BB%93%E6%9E%9C"><span class="toc-text">19. 最终真实运行结果</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#20-%E6%9C%80%E6%9C%89%E4%BB%B7%E5%80%BC%E7%9A%84-JVM-%E5%86%85%E5%AD%98%E6%97%A5%E5%BF%97"><span class="toc-text">20. 最有价值的 JVM 内存日志</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#21-%E7%BB%93%E8%AE%BA%E4%B8%80%EF%BC%9AMap-%E6%9C%AC%E8%BA%AB%E5%A2%9E%E5%8A%A0%E7%9A%84%E5%86%85%E5%AD%98%E9%9D%9E%E5%B8%B8%E6%9C%89%E9%99%90"><span class="toc-text">21. 结论一：Map 本身增加的内存非常有限</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#22-%E7%BB%93%E8%AE%BA%E4%BA%8C%EF%BC%9AGC-%E5%90%8E%E5%86%85%E5%AD%98%E5%8F%AF%E4%BB%A5%E6%98%8E%E6%98%BE%E4%B8%8B%E9%99%8D"><span class="toc-text">22. 结论二：GC 后内存可以明显下降</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#23-%E7%BB%93%E8%AE%BA%E4%B8%89%EF%BC%9A%E7%9C%9F%E6%AD%A3%E7%9A%84%E6%A0%B9%E6%9C%AC%E9%97%AE%E9%A2%98%E4%BB%8D%E7%84%B6%E6%98%AF%E2%80%9C%E4%B8%80%E6%AC%A1%E6%80%A7%E6%9F%A5%E8%AF%A2-320-%E4%B8%87%E6%9D%A1%E2%80%9D"><span class="toc-text">23. 结论三：真正的根本问题仍然是“一次性查询 320 万条”</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#24-%E5%BD%93%E5%89%8D%E6%96%B9%E6%A1%88%E8%A7%A3%E5%86%B3%E7%9A%84%E6%98%AF%E2%80%9C%E5%B3%B0%E5%80%BC%E2%80%9D%EF%BC%8C%E4%B8%8D%E6%98%AF%E2%80%9C%E5%9F%BA%E7%BA%BF%E2%80%9D"><span class="toc-text">24. 当前方案解决的是“峰值”，不是“基线”</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#25-%E4%B8%BA%E4%BB%80%E4%B9%88%E6%9C%80%E7%BB%88%E6%9B%B4%E5%A5%BD%E7%9A%84%E6%96%B9%E6%A1%88%E6%98%AF%E5%88%86%E9%A1%B5-%E6%B5%81%E5%BC%8F%E6%9F%A5%E8%AF%A2%EF%BC%9F"><span class="toc-text">25. 为什么最终更好的方案是分页 &#x2F; 流式查询？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#26-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BF%99%E6%AC%A1%E6%B2%A1%E6%9C%89%E7%9B%B4%E6%8E%A5%E9%87%87%E7%94%A8%E5%88%86%E9%A1%B5%EF%BC%9F"><span class="toc-text">26. 为什么这次没有直接采用分页？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#27-%E8%BF%98%E6%9C%89%E4%B8%80%E4%B8%AA%E9%9A%90%E8%97%8F%E9%97%AE%E9%A2%98%EF%BC%9A%E5%A4%B1%E8%B4%A5%E4%B8%8D%E8%83%BD%E9%9D%99%E9%BB%98%E5%90%9E%E6%8E%89"><span class="toc-text">27. 还有一个隐藏问题：失败不能静默吞掉</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#28-%E8%BF%98%E6%9C%89%E4%B8%80%E4%B8%AA%E6%95%B0%E6%8D%AE%E5%87%86%E7%A1%AE%E6%80%A7%E7%BB%86%E8%8A%82"><span class="toc-text">28. 还有一个数据准确性细节</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#29-%E6%9C%80%E7%BB%88%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84"><span class="toc-text">29. 最终代码结构</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#30-%E6%9C%80%E7%BB%88%E7%9A%84%E4%BC%98%E5%8C%96%E4%BB%A3%E7%A0%81%E6%A0%B8%E5%BF%83"><span class="toc-text">30. 最终的优化代码核心</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#31-%E8%BF%99%E6%AC%A1-OOM-%E6%8E%92%E6%9F%A5%E6%80%BB%E7%BB%93"><span class="toc-text">31. 这次 OOM 排查总结</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E5%88%99%E4%B8%80%EF%BC%9A%E5%A4%A7%E6%95%B0%E6%8D%AE%E4%B8%8D%E8%A6%81%E4%B8%80%E6%AC%A1%E5%88%9B%E5%BB%BA%E5%A4%9A%E4%B8%AA%E5%89%AF%E6%9C%AC"><span class="toc-text">原则一：大数据不要一次创建多个副本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E5%88%99%E4%BA%8C%EF%BC%9A%E8%A7%A3%E9%99%A4%E5%8E%9F%E5%A7%8B%E5%AE%B9%E5%99%A8%E5%BC%95%E7%94%A8"><span class="toc-text">原则二：解除原始容器引用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E5%88%99%E4%B8%89%EF%BC%9A%E6%89%B9%E6%AC%A1%E5%AE%B9%E5%99%A8%E5%8F%AA%E4%BF%9D%E7%95%99%E5%BD%93%E5%89%8D%E6%89%B9"><span class="toc-text">原则三：批次容器只保留当前批</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E5%88%99%E5%9B%9B%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9F%A5%E8%AF%A2%E7%BB%93%E6%9E%9C%E4%B9%9F%E8%A6%81%E6%8E%A7%E5%88%B6%E8%A7%84%E6%A8%A1"><span class="toc-text">原则四：数据库查询结果也要控制规模</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E5%88%99%E4%BA%94%EF%BC%9A%E5%88%A4%E6%96%AD%E5%86%85%E5%AD%98%E9%97%AE%E9%A2%98%E8%A6%81%E7%9C%8B%E8%B6%8B%E5%8A%BF%EF%BC%8C%E8%80%8C%E4%B8%8D%E6%98%AF%E5%8D%95%E7%82%B9"><span class="toc-text">原则五：判断内存问题要看趋势，而不是单点</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#32-%E6%9C%80%E7%BB%88%E6%95%88%E6%9E%9C"><span class="toc-text">32. 最终效果</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#33-%E5%90%8E%E7%BB%AD%E8%BF%9B%E4%B8%80%E6%AD%A5%E4%BC%98%E5%8C%96%E6%96%B9%E5%90%91"><span class="toc-text">33. 后续进一步优化方向</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E5%90%91%E4%B8%80%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E5%88%86%E9%A1%B5-%E6%B5%81%E5%BC%8F%E8%AF%BB%E5%8F%96"><span class="toc-text">方向一：数据库分页 &#x2F; 流式读取</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E5%90%91%E4%BA%8C%EF%BC%9A%E5%87%8F%E5%B0%91-Java-%E4%B8%AD%E9%97%B4%E6%80%81%EF%BC%8C%E6%9B%B4%E5%A4%9A%E4%BA%A4%E7%BB%99-PostgreSQL"><span class="toc-text">方向二：减少 Java 中间态，更多交给 PostgreSQL</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#34-%E6%9C%80%E5%90%8E%E7%9A%84%E7%BB%8F%E9%AA%8C"><span class="toc-text">34. 最后的经验</span></a></li></ol>
 </div>
     
 </div>
@@ -144,7 +144,7 @@
         
         <span class="attr">标签：/
         
-        <a class="tag" href="/tags/#计划" title="计划">计划</a>
+        <a class="tag" href="/tags/#OOM" title="OOM">OOM</a>
         <span>/</span>
         
         
@@ -302,7 +302,491 @@
 
 <p>这个对象仍然可达，GC 仍然不能回收。</p>
 <hr>
-<h1 id="9-真正有效的方式：解除-baseRows-对当前批次的"><a href="#9-真正有效的方式：解除-baseRows-对当前批次的" class="headerlink" title="9. 真正有效的方式：解除 baseRows 对当前批次的"></a>9. 真正有效的方式：解除 baseRows 对当前批次的</h1>
+<h1 id="9-真正有效的方式：解除-baseRows-对当前批次的引用"><a href="#9-真正有效的方式：解除-baseRows-对当前批次的引用" class="headerlink" title="9. 真正有效的方式：解除 baseRows 对当前批次的引用"></a>9. 真正有效的方式：解除 baseRows 对当前批次的引用</h1><p>最终方案使用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">baseRows.set(i, <span class="literal">null</span>);</span><br></pre></td></tr></table></figure>
+
+<p>而不是：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">baseRows.remove(i);</span><br></pre></td></tr></table></figure>
+
+<p>也不是：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">row = <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
+
+<p>核心思路是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">baseRows</span><br><span class="line">[0] → row0</span><br><span class="line">[1] → row1</span><br><span class="line">[2] → row2</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>处理第一个窗口时：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">currentMap</span><br><span class="line">    ↓</span><br><span class="line">row0</span><br><span class="line">row1</span><br><span class="line">...</span><br><span class="line">row639999</span><br></pre></td></tr></table></figure>
+
+<p>同时：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">baseRows.set(i, <span class="literal">null</span>);</span><br></pre></td></tr></table></figure>
+
+<p>于是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">baseRows</span><br><span class="line">[0] → null</span><br><span class="line">[1] → null</span><br><span class="line">[2] → null</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>这样当前批次的数据只由：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">currentMap</span><br></pre></td></tr></table></figure>
+
+<p>持有。</p>
+<p>等当前批次处理完：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">currentMap.clear();</span><br></pre></td></tr></table></figure>
+
+<p>那么这批 row 就有机会成为 GC 对象。</p>
+<hr>
+<h1 id="10-为什么使用-set-null-，而不是-remove-？"><a href="#10-为什么使用-set-null-，而不是-remove-？" class="headerlink" title="10. 为什么使用 set(null)，而不是 remove()？"></a>10. 为什么使用 set(null)，而不是 remove()？</h1><p>不能写：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">baseRows.remove(i);</span><br></pre></td></tr></table></figure>
+
+<p>因为 <code>remove(i)</code> 会导致后面的元素整体左移。</p>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 1 2 3 4</span><br></pre></td></tr></table></figure>
+
+<p>删除下标 1 后：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 2 3 4</span><br></pre></td></tr></table></figure>
+
+<p>如果循环过程中继续按照原始下标处理，就容易产生：</p>
+<ul>
+<li>漏数据</li>
+<li>重复处理</li>
+<li>索引错乱</li>
+<li>大量数组搬移</li>
+</ul>
+<p>而：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">baseRows.set(i, <span class="literal">null</span>);</span><br></pre></td></tr></table></figure>
+
+<p>不会改变 List 长度。</p>
+<p>所以：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">索引结构不变</span><br><span class="line">+</span><br><span class="line">解除原始引用</span><br></pre></td></tr></table></figure>
+
+<p>是这个场景非常合适的做法。</p>
+<hr>
+<h1 id="11-最终方案：滑动窗口-单-Map"><a href="#11-最终方案：滑动窗口-单-Map" class="headerlink" title="11. 最终方案：滑动窗口 + 单 Map"></a>11. 最终方案：滑动窗口 + 单 Map</h1><p>最终没有同时创建五个 Map，而是只保留：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">currentMap</span><br></pre></td></tr></table></figure>
+
+<p>每次处理：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">640,000 条</span><br></pre></td></tr></table></figure>
+
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">第1批</span><br><span class="line">0 ～ 639999</span><br><span class="line"></span><br><span class="line">第2批</span><br><span class="line">640000 ～ 1279999</span><br><span class="line"></span><br><span class="line">第3批</span><br><span class="line">1280000 ～ 1919999</span><br><span class="line"></span><br><span class="line">第4批</span><br><span class="line">1920000 ～ 2559999</span><br><span class="line"></span><br><span class="line">第5批</span><br><span class="line">2560000 ～ 3199999</span><br><span class="line"></span><br><span class="line">第6批</span><br><span class="line">剩余 7860</span><br></pre></td></tr></table></figure>
+
+<p>代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">PROCESS_MAP_SIZE</span> <span class="operator">=</span> <span class="number">640000</span>;</span><br></pre></td></tr></table></figure>
+
+<p>循环：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">start</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">     start &lt; baseTotal;</span><br><span class="line">     start += PROCESS_MAP_SIZE) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> <span class="variable">end</span> <span class="operator">=</span> Math.min(</span><br><span class="line">        start + PROCESS_MAP_SIZE,</span><br><span class="line">        baseTotal</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="12-当前批次构建过程"><a href="#12-当前批次构建过程" class="headerlink" title="12. 当前批次构建过程"></a>12. 当前批次构建过程</h1><p>核心代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">ConcurrentHashMap&lt;String, Map&lt;String, Object&gt;&gt; currentMap =</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">ConcurrentHashMap</span>&lt;&gt;(</span><br><span class="line">            Math.max(batchSize, <span class="number">16</span>)</span><br><span class="line">        );</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> start; i &lt; end; i++) &#123;</span><br><span class="line"></span><br><span class="line">    Map&lt;String, Object&gt; row = baseRows.get(i);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (row == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">continue</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="type">String</span> <span class="variable">account</span> <span class="operator">=</span></span><br><span class="line">            getNullableString(row, <span class="string">&quot;user_account&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (account.isEmpty()) &#123;</span><br><span class="line">        baseRows.set(i, <span class="literal">null</span>);</span><br><span class="line">        <span class="keyword">continue</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    currentMap.put(account, row);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 关键：</span></span><br><span class="line">    <span class="comment">// currentMap 已经持有 row，</span></span><br><span class="line">    <span class="comment">// 解除 baseRows 对 row 的引用</span></span><br><span class="line">    baseRows.set(i, <span class="literal">null</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里有一个很重要的点：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">currentMap.put(account, row);</span><br></pre></td></tr></table></figure>
+
+<p>并没有复制 row。</p>
+<p>只是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">baseRows</span><br><span class="line">        ↓</span><br><span class="line">      row</span><br><span class="line"></span><br><span class="line">currentMap</span><br><span class="line">        ↓</span><br><span class="line">      row</span><br></pre></td></tr></table></figure>
+
+<p>然后：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">baseRows.set(i, <span class="literal">null</span>);</span><br></pre></td></tr></table></figure>
+
+<p>最终变成：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">baseRows</span><br><span class="line">        ↓</span><br><span class="line">      null</span><br><span class="line"></span><br><span class="line">currentMap</span><br><span class="line">        ↓</span><br><span class="line">      row</span><br></pre></td></tr></table></figure>
+
+<p>所以不会因为 Map 再次保存 row 而发生一次完整的数据复制。</p>
+<hr>
+<h1 id="13-每批数据的完整处理流程"><a href="#13-每批数据的完整处理流程" class="headerlink" title="13. 每批数据的完整处理流程"></a>13. 每批数据的完整处理流程</h1><p>当前批次：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">640000 rows</span><br><span class="line">      ↓</span><br><span class="line">currentMap</span><br><span class="line">      ↓</span><br><span class="line">accounts</span><br><span class="line">      ↓</span><br><span class="line">OLT</span><br><span class="line">      ↓</span><br><span class="line">下行光衰</span><br><span class="line">      ↓</span><br><span class="line">光猫</span><br><span class="line">      ↓</span><br><span class="line">Entity</span><br><span class="line">      ↓</span><br><span class="line">每 2000 条 INSERT</span><br><span class="line">      ↓</span><br><span class="line">clear</span><br><span class="line">      ↓</span><br><span class="line">下一批</span><br></pre></td></tr></table></figure>
+
+<p>而不是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">320 万 rows</span><br><span class="line">      ↓</span><br><span class="line">完整 Map</span><br><span class="line">      ↓</span><br><span class="line">完整 Entity List</span><br><span class="line">      ↓</span><br><span class="line">一次 INSERT</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="14-Entity-也不能一次创建-320-万条"><a href="#14-Entity-也不能一次创建-320-万条" class="headerlink" title="14. Entity 也不能一次创建 320 万条"></a>14. Entity 也不能一次创建 320 万条</h1><p>错误写法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">List&lt;AreaUserScoreEverydayEntity&gt; entityList =</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;(<span class="number">3200000</span>);</span><br></pre></td></tr></table></figure>
+
+<p>这会产生一个新的巨大对象集合。</p>
+<p>最终相当于：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">baseRows       → 320万</span><br><span class="line">currentMap     → 320万</span><br><span class="line">entityList     → 320万</span><br></pre></td></tr></table></figure>
+
+<p>内存压力会非常大。</p>
+<p>最终采用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">BATCH_SIZE</span> <span class="operator">=</span> <span class="number">2000</span>;</span><br></pre></td></tr></table></figure>
+
+<p>每次：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">List&lt;AreaUserScoreEverydayEntity&gt; batch =</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;(BATCH_SIZE);</span><br></pre></td></tr></table></figure>
+
+<p>然后：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (Map.Entry&lt;String, Map&lt;String, Object&gt;&gt; entry</span><br><span class="line">        : byAccount.entrySet()) &#123;</span><br><span class="line"></span><br><span class="line">    batch.add(</span><br><span class="line">        buildEntity(</span><br><span class="line">            dayId,</span><br><span class="line">            entry.getKey(),</span><br><span class="line">            entry.getValue()</span><br><span class="line">        )</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (batch.size() &gt;= BATCH_SIZE) &#123;</span><br><span class="line">        insertBatchOrThrow(batch, batchIndex++);</span><br><span class="line">        batch.clear();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因此 Entity 始终控制在：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">约 2000 条</span><br></pre></td></tr></table></figure>
+
+<p>而不是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">320 万条</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="15-并发查询也不能创建几十万个任务"><a href="#15-并发查询也不能创建几十万个任务" class="headerlink" title="15. 并发查询也不能创建几十万个任务"></a>15. 并发查询也不能创建几十万个任务</h1><p>OLT、光衰、光猫都需要对账号集合进行分片查询。</p>
+<p>例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">QUERY_CHUNK</span> <span class="operator">=</span> <span class="number">5000</span>;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">FILL_THREAD_COUNT</span> <span class="operator">=</span> <span class="number">5</span>;</span><br></pre></td></tr></table></figure>
+
+<p>最终使用：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">固定线程池</span><br><span class="line">+</span><br><span class="line">Semaphore</span><br><span class="line">+</span><br><span class="line">5000 条一个 chunk</span><br></pre></td></tr></table></figure>
+
+<p>控制在途任务数量。</p>
+<p>核心思想：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">640000 个账号</span><br><span class="line">    ↓</span><br><span class="line">5000 一批</span><br><span class="line">    ↓</span><br><span class="line">128 个 chunk</span><br></pre></td></tr></table></figure>
+
+<p>但不是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">一次性创建 128 个 Future</span><br></pre></td></tr></table></figure>
+
+<p>更不是几十万任务对象全部堆积在 JVM。</p>
+<p>通过：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Semaphore</span> <span class="variable">inFlight</span> <span class="operator">=</span></span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Semaphore</span>(FILL_THREAD_COUNT);</span><br></pre></td></tr></table></figure>
+
+<p>保证最多只有少量任务在途。</p>
+<hr>
+<h1 id="16-为什么并发任务结束后才能释放-Map？"><a href="#16-为什么并发任务结束后才能释放-Map？" class="headerlink" title="16. 为什么并发任务结束后才能释放 Map？"></a>16. 为什么并发任务结束后才能释放 Map？</h1><p>这是另一个很容易忽略的点。</p>
+<p>假设：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">currentMap.clear();</span><br></pre></td></tr></table></figure>
+
+<p>但是后台线程还在执行：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">task.accept(chunk);</span><br></pre></td></tr></table></figure>
+
+<p>线程中的代码还可能通过：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">byAccount.get(account)</span><br></pre></td></tr></table></figure>
+
+<p>持有：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">currentMap</span><br></pre></td></tr></table></figure>
+
+<p>中的 row 引用。</p>
+<p>所以必须保证：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">OLT 全部完成</span><br><span class="line">↓</span><br><span class="line">光衰全部完成</span><br><span class="line">↓</span><br><span class="line">光猫全部完成</span><br><span class="line">↓</span><br><span class="line">INSERT 完成</span><br><span class="line">↓</span><br><span class="line">才 clear currentMap</span><br></pre></td></tr></table></figure>
+
+<p>因此 <code>forEachChunkConcurrently()</code> 最后必须等待任务全部结束。</p>
+<hr>
+<h1 id="17-最终释放当前批次"><a href="#17-最终释放当前批次" class="headerlink" title="17. 最终释放当前批次"></a>17. 最终释放当前批次</h1><p>代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">accounts.clear();</span><br><span class="line">accounts = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">currentMap.clear();</span><br><span class="line">currentMap = <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
+
+<p>这一步的意义不是：</p>
+<blockquote>
+<p>“执行完这两句 JVM 立刻把内存还给操作系统。”</p>
+</blockquote>
+<p>而是：</p>
+<blockquote>
+<p><strong>解除 Java 对这些对象的强引用，让它们成为 GC 的候选对象。</strong></p>
+</blockquote>
+<p>真正什么时候回收，由 JVM GC 决定。</p>
+<p>所以不能仅仅看：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">clear() 后内存有没有立刻下降</span><br></pre></td></tr></table></figure>
+
+<p>来判断方案是否有效。</p>
+<hr>
+<h1 id="18-一个非常重要的排查误区：used-heap-突然升高-≠-内存泄漏"><a href="#18-一个非常重要的排查误区：used-heap-突然升高-≠-内存泄漏" class="headerlink" title="18. 一个非常重要的排查误区：used heap 突然升高 ≠ 内存泄漏"></a>18. 一个非常重要的排查误区：used heap 突然升高 ≠ 内存泄漏</h1><p>优化之后出现过一条非常吓人的日志：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Map1 构建完成：</span><br><span class="line">used heap = 2931 MB</span><br><span class="line"></span><br><span class="line">Map1 释放后：</span><br><span class="line">used heap = 3789 MB</span><br></pre></td></tr></table></figure>
+
+<p>看起来好像：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Map1 都 clear 了</span><br><span class="line">为什么反而从 2.9GB 涨到了 3.8GB？</span><br></pre></td></tr></table></figure>
+
+<p>一开始很容易认为：</p>
+<blockquote>
+<p>“肯定有内存泄漏。”</p>
+</blockquote>
+<p>但继续跑后：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Map2 构建完成：</span><br><span class="line">3814 MB</span><br><span class="line"></span><br><span class="line">Map2 释放后：</span><br><span class="line">2380 MB</span><br></pre></td></tr></table></figure>
+
+<p>这就说明之前的 3789MB 并不能直接证明 Map1 泄漏。</p>
+<p>更合理的解释是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Map1 处理期间</span><br><span class="line">    ↓</span><br><span class="line">产生大量临时对象</span><br><span class="line">    ↓</span><br><span class="line">这些对象暂时还没有被 GC 回收</span><br><span class="line">    ↓</span><br><span class="line">used heap 持续升高</span><br><span class="line">    ↓</span><br><span class="line">之后 GC</span><br><span class="line">    ↓</span><br><span class="line">2380 MB</span><br></pre></td></tr></table></figure>
+
+<p>因此：</p>
+<blockquote>
+<p><strong>判断 OOM &#x2F; 内存泄漏不能只看某一个时间点的 used heap，应该看多批次的整体趋势。</strong></p>
+</blockquote>
+<hr>
+<h1 id="19-最终真实运行结果"><a href="#19-最终真实运行结果" class="headerlink" title="19. 最终真实运行结果"></a>19. 最终真实运行结果</h1><p>整个任务处理：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">baseRows total = 3207860</span><br></pre></td></tr></table></figure>
+
+<p>分为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Map1 = 640000</span><br><span class="line">Map2 = 640000</span><br><span class="line">Map3 = 640000</span><br><span class="line">Map4 = 640000</span><br><span class="line">Map5 = 640000</span><br><span class="line">Map6 = 7860</span><br></pre></td></tr></table></figure>
+
+<p>最终：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">total inserted = 3207859</span><br></pre></td></tr></table></figure>
+
+<p>基本完成全部数据处理。</p>
+<hr>
+<h1 id="20-最有价值的-JVM-内存日志"><a href="#20-最有价值的-JVM-内存日志" class="headerlink" title="20. 最有价值的 JVM 内存日志"></a>20. 最有价值的 JVM 内存日志</h1><p>实际运行中的关键数据如下：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">主查询完成后：</span><br><span class="line">used heap = 2905 MB</span><br><span class="line"></span><br><span class="line">Map1 构建完成：</span><br><span class="line">used heap = 2931 MB</span><br><span class="line"></span><br><span class="line">Map1 释放后：</span><br><span class="line">used heap = 3789 MB</span><br><span class="line"></span><br><span class="line">Map2 构建完成：</span><br><span class="line">used heap = 3814 MB</span><br><span class="line"></span><br><span class="line">Map2 释放后：</span><br><span class="line">used heap = 2380 MB</span><br><span class="line"></span><br><span class="line">Map3 构建完成：</span><br><span class="line">used heap = 2405 MB</span><br><span class="line"></span><br><span class="line">Map3 释放后：</span><br><span class="line">used heap = 3143 MB</span><br><span class="line"></span><br><span class="line">Map4 构建完成：</span><br><span class="line">used heap = 3169 MB</span><br><span class="line"></span><br><span class="line">Map4 释放后：</span><br><span class="line">used heap = 3020 MB</span><br><span class="line"></span><br><span class="line">Map5 构建完成：</span><br><span class="line">used heap = 3045 MB</span><br><span class="line"></span><br><span class="line">Map5 释放后：</span><br><span class="line">used heap = 1781 MB</span><br><span class="line"></span><br><span class="line">Map6 构建完成：</span><br><span class="line">used heap = 1781 MB</span><br><span class="line"></span><br><span class="line">Map6 释放后：</span><br><span class="line">used heap = 2354 MB</span><br></pre></td></tr></table></figure>
+
+<p>这个结果说明了几个非常重要的事情。</p>
+<hr>
+<h1 id="21-结论一：Map-本身增加的内存非常有限"><a href="#21-结论一：Map-本身增加的内存非常有限" class="headerlink" title="21. 结论一：Map 本身增加的内存非常有限"></a>21. 结论一：Map 本身增加的内存非常有限</h1><p>例如：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">主查询：</span><br><span class="line">2905 MB</span><br><span class="line"></span><br><span class="line">Map1 构建：</span><br><span class="line">2931 MB</span><br></pre></td></tr></table></figure>
+
+<p>增加：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">26 MB</span><br></pre></td></tr></table></figure>
+
+<p>Map2：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">3789 MB</span><br><span class="line">→</span><br><span class="line">3814 MB</span><br></pre></td></tr></table></figure>
+
+<p>增加：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">25 MB</span><br></pre></td></tr></table></figure>
+
+<p>说明当前设计中的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">currentMap.put(account, row);</span><br></pre></td></tr></table></figure>
+
+<p>没有把 64 万条 row 再深拷贝一份。</p>
+<p>Map 更多承担的是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Key</span><br><span class="line">+</span><br><span class="line">HashMap Node</span><br><span class="line">+</span><br><span class="line">引用</span><br></pre></td></tr></table></figure>
+
+<p>等额外开销。</p>
+<p>这证明：</p>
+<blockquote>
+<p><code>baseRows.set(i, null)</code> 的引用转移策略确实生效。</p>
+</blockquote>
+<hr>
+<h1 id="22-结论二：GC-后内存可以明显下降"><a href="#22-结论二：GC-后内存可以明显下降" class="headerlink" title="22. 结论二：GC 后内存可以明显下降"></a>22. 结论二：GC 后内存可以明显下降</h1><p>最典型的是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Map2 处理前：</span><br><span class="line">3814 MB</span><br><span class="line"></span><br><span class="line">Map2 释放后：</span><br><span class="line">2380 MB</span><br></pre></td></tr></table></figure>
+
+<p>下降：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1434 MB</span><br></pre></td></tr></table></figure>
+
+<p>说明大量之前创建的临时对象最终能够被回收。</p>
+<p>因此没有看到典型的：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">3.0GB</span><br><span class="line">↓</span><br><span class="line">3.2GB</span><br><span class="line">↓</span><br><span class="line">3.5GB</span><br><span class="line">↓</span><br><span class="line">3.8GB</span><br><span class="line">↓</span><br><span class="line">4.0GB</span><br><span class="line">↓</span><br><span class="line">OOM</span><br></pre></td></tr></table></figure>
+
+<p>这种单调上升趋势。</p>
+<hr>
+<h1 id="23-结论三：真正的根本问题仍然是“一次性查询-320-万条”"><a href="#23-结论三：真正的根本问题仍然是“一次性查询-320-万条”" class="headerlink" title="23. 结论三：真正的根本问题仍然是“一次性查询 320 万条”"></a>23. 结论三：真正的根本问题仍然是“一次性查询 320 万条”</h1><p>虽然最终方案能够稳定运行，但这一条日志仍然值得警惕：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">主查询完成后：</span><br><span class="line">used heap = 2905 MB</span><br></pre></td></tr></table></figure>
+
+<p>也就是说：</p>
+<blockquote>
+<p>在进入 Map 分批处理之前，JVM 已经承担了约 2.9GB 的基础内存压力。</p>
+</blockquote>
+<p>因此当前方案属于：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">通过降低后续峰值</span><br><span class="line">避免 OOM</span><br></pre></td></tr></table></figure>
+
+<p>而不是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">从根本上消除大数据量 JVM 内存占用</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="24-当前方案解决的是“峰值”，不是“基线”"><a href="#24-当前方案解决的是“峰值”，不是“基线”" class="headerlink" title="24. 当前方案解决的是“峰值”，不是“基线”"></a>24. 当前方案解决的是“峰值”，不是“基线”</h1><p>可以把整个内存结构理解为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">原始 baseRows</span><br><span class="line">≈ 2.9GB</span><br></pre></td></tr></table></figure>
+
+<p>然后每个批次又增加：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">currentMap</span><br><span class="line">accounts</span><br><span class="line">loidToAccount</span><br><span class="line">loids</span><br><span class="line">查询结果</span><br><span class="line">Entity batch</span><br></pre></td></tr></table></figure>
+
+<p>如果一次性处理全部 320 万：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">2.9GB</span><br><span class="line">+</span><br><span class="line">各种临时对象</span><br><span class="line">+</span><br><span class="line">320万 Map</span><br><span class="line">+</span><br><span class="line">320万 Entity</span><br></pre></td></tr></table></figure>
+
+<p>很容易超过：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">4GB</span><br></pre></td></tr></table></figure>
+
+<p>而当前方案是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">2.9GB baseRows</span><br><span class="line"></span><br><span class="line">+</span><br><span class="line"></span><br><span class="line">64万 currentMap</span><br><span class="line">+</span><br><span class="line"></span><br><span class="line">少量临时对象</span><br></pre></td></tr></table></figure>
+
+<p>因此把峰值压了下来。</p>
+<hr>
+<h1 id="25-为什么最终更好的方案是分页-流式查询？"><a href="#25-为什么最终更好的方案是分页-流式查询？" class="headerlink" title="25. 为什么最终更好的方案是分页 &#x2F; 流式查询？"></a>25. 为什么最终更好的方案是分页 &#x2F; 流式查询？</h1><p>从架构上看，最理想的方式其实不是：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Map&lt;String, Object&gt;&gt; baseRows =</span><br><span class="line">        mapper.getUserScore();</span><br></pre></td></tr></table></figure>
+
+<p>而是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">数据库</span><br><span class="line">  ↓</span><br><span class="line">每次读取 20万 / 30万</span><br><span class="line">  ↓</span><br><span class="line">Java 处理</span><br><span class="line">  ↓</span><br><span class="line">写库</span><br><span class="line">  ↓</span><br><span class="line">释放</span><br><span class="line">  ↓</span><br><span class="line">继续读取下一批</span><br></pre></td></tr></table></figure>
+
+<p>甚至进一步做到：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">PostgreSQL</span><br><span class="line">      ↓</span><br><span class="line">流式 ResultSet</span><br><span class="line">      ↓</span><br><span class="line">Java</span><br><span class="line">      ↓</span><br><span class="line">批量 INSERT</span><br></pre></td></tr></table></figure>
+
+<p>这样就可以避免：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">3,207,860 个 Map</span><br></pre></td></tr></table></figure>
+
+<p>同时存在 JVM 中。</p>
+<p>理论上的内存模型将从：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2.9GB+</span><br></pre></td></tr></table></figure>
+
+<p>降低到：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">固定窗口大小</span><br><span class="line">+</span><br><span class="line">少量临时对象</span><br></pre></td></tr></table></figure>
+
+<p>这才是真正意义上的“大数据量内存优化”。</p>
+<hr>
+<h1 id="26-为什么这次没有直接采用分页？"><a href="#26-为什么这次没有直接采用分页？" class="headerlink" title="26. 为什么这次没有直接采用分页？"></a>26. 为什么这次没有直接采用分页？</h1><p>实际项目优化不能只考虑理论上的最优方案，还要考虑：</p>
+<ul>
+<li>现有 SQL 改动成本</li>
+<li>Mapper 改动成本</li>
+<li>线上风险</li>
+<li>数据顺序</li>
+<li>原有业务逻辑</li>
+<li>是否影响现有查询</li>
+<li>是否需要重新验证全部指标关联</li>
+</ul>
+<p>因此这次先采用一个低改造成本的方案：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">一次查询</span><br><span class="line">+</span><br><span class="line">Java 单 Map 滑动窗口</span><br><span class="line">+</span><br><span class="line">64 万分批处理</span><br></pre></td></tr></table></figure>
+
+<p>它不是最终架构，但可以在不大改现有 SQL 的情况下快速解决 OOM 风险。</p>
+<hr>
+<h1 id="27-还有一个隐藏问题：失败不能静默吞掉"><a href="#27-还有一个隐藏问题：失败不能静默吞掉" class="headerlink" title="27. 还有一个隐藏问题：失败不能静默吞掉"></a>27. 还有一个隐藏问题：失败不能静默吞掉</h1><p>大数据处理还有一个容易忽略的问题。</p>
+<p>错误代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    mapper.insertBatch(batch);</span><br><span class="line">&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    logger.error(...);</span><br><span class="line">    batch.clear();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这种写法会产生严重问题：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">INSERT 失败</span><br><span class="line">    ↓</span><br><span class="line">异常被吃掉</span><br><span class="line">    ↓</span><br><span class="line">继续执行</span><br><span class="line">    ↓</span><br><span class="line">totalInserted 看起来正常</span><br><span class="line">    ↓</span><br><span class="line">任务最终显示成功</span><br><span class="line">    ↓</span><br><span class="line">实际上丢了数据</span><br></pre></td></tr></table></figure>
+
+<p>因此正确做法应该是：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="type">int</span> <span class="title function_">insertBatchOrThrow</span><span class="params">(</span></span><br><span class="line"><span class="params">        List&lt;AreaUserScoreEverydayEntity&gt; batch,</span></span><br><span class="line"><span class="params">        <span class="type">int</span> batchIndex)</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> userScoreMapper</span><br><span class="line">                .insertAreaUserScoreBatch(batch);</span><br><span class="line"></span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line"></span><br><span class="line">        logger.error(</span><br><span class="line">            <span class="string">&quot;批量插入失败，批次=&#123;&#125;，数量=&#123;&#125;&quot;</span>,</span><br><span class="line">            batchIndex,</span><br><span class="line">            batch.size(),</span><br><span class="line">            e</span><br><span class="line">        );</span><br><span class="line"></span><br><span class="line">        <span class="keyword">throw</span> e;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>即：</p>
+<blockquote>
+<p><strong>批次失败就让任务失败，而不是悄悄跳过。</strong></p>
+</blockquote>
+<p>对于数据同步任务来说，这一点甚至比 OOM 更重要。</p>
+<hr>
+<h1 id="28-还有一个数据准确性细节"><a href="#28-还有一个数据准确性细节" class="headerlink" title="28. 还有一个数据准确性细节"></a>28. 还有一个数据准确性细节</h1><p>最终运行结果：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">baseRows total = 3207860</span><br></pre></td></tr></table></figure>
+
+<p>但是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">total inserted = 3207859</span><br></pre></td></tr></table></figure>
+
+<p>少了一条。</p>
+<p>同时日志：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Map6 size = 7860</span><br><span class="line">Map6 mapSize = 7859</span><br><span class="line">duplicateCount = 0</span><br></pre></td></tr></table></figure>
+
+<p>这说明最后这一条并不是 Map 重复覆盖导致的。</p>
+<p>需要进一步检查：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">getNullableString(row, <span class="string">&quot;user_account&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>对应的数据是否：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">NULL</span><br><span class="line">空字符串</span><br><span class="line">异常账号</span><br></pre></td></tr></table></figure>
+
+<p>因为代码中：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (account.isEmpty()) &#123;</span><br><span class="line">    baseRows.set(i, <span class="literal">null</span>);</span><br><span class="line">    <span class="keyword">continue</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>会主动丢弃无账号数据。</p>
+<p>因此：</p>
+<blockquote>
+<p>大数据量优化除了关注内存，也必须对“输入条数 → Map 条数 → INSERT 条数”建立完整的数量校验。</p>
+</blockquote>
+<hr>
+<h1 id="29-最终代码结构"><a href="#29-最终代码结构" class="headerlink" title="29. 最终代码结构"></a>29. 最终代码结构</h1><p>优化后的整体模型可以抽象成：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">┌──────────────────────────────┐</span><br><span class="line">│ PostgreSQL 主查询            │</span><br><span class="line">│ 3,207,860 rows              │</span><br><span class="line">└──────────────┬───────────────┘</span><br><span class="line">               │</span><br><span class="line">               ▼</span><br><span class="line">       baseRows List</span><br><span class="line">               │</span><br><span class="line">               │ 640,000</span><br><span class="line">               ▼</span><br><span class="line">┌──────────────────────────────┐</span><br><span class="line">│ currentMap                   │</span><br><span class="line">│ 当前只处理 64 万             │</span><br><span class="line">└──────────────┬───────────────┘</span><br><span class="line">               │</span><br><span class="line">        ┌──────┼──────┐</span><br><span class="line">        ▼      ▼      ▼</span><br><span class="line">       OLT    光衰    光猫</span><br><span class="line">        │      │      │</span><br><span class="line">        └──────┼──────┘</span><br><span class="line">               ▼</span><br><span class="line">       Entity Batch 2000</span><br><span class="line">               │</span><br><span class="line">               ▼</span><br><span class="line">           INSERT DB</span><br><span class="line">               │</span><br><span class="line">               ▼</span><br><span class="line">        currentMap.clear()</span><br><span class="line">               │</span><br><span class="line">               ▼</span><br><span class="line">          下一批 64 万</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="30-最终的优化代码核心"><a href="#30-最终的优化代码核心" class="headerlink" title="30. 最终的优化代码核心"></a>30. 最终的优化代码核心</h1><p>核心循环可以浓缩为：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">start</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">     start &lt; baseTotal;</span><br><span class="line">     start += PROCESS_MAP_SIZE) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> <span class="variable">end</span> <span class="operator">=</span> Math.min(</span><br><span class="line">        start + PROCESS_MAP_SIZE,</span><br><span class="line">        baseTotal</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    ConcurrentHashMap&lt;String, Map&lt;String, Object&gt;&gt; currentMap =</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">ConcurrentHashMap</span>&lt;&gt;(</span><br><span class="line">                Math.max(end - start, <span class="number">16</span>)</span><br><span class="line">            );</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> start; i &lt; end; i++) &#123;</span><br><span class="line"></span><br><span class="line">        Map&lt;String, Object&gt; row = baseRows.get(i);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (row == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="type">String</span> <span class="variable">account</span> <span class="operator">=</span></span><br><span class="line">                getNullableString(row, <span class="string">&quot;user_account&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (account.isEmpty()) &#123;</span><br><span class="line">            baseRows.set(i, <span class="literal">null</span>);</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        currentMap.put(account, row);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 解除 baseRows 对当前 row 的引用</span></span><br><span class="line">        baseRows.set(i, <span class="literal">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    List&lt;String&gt; accounts =</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;(currentMap.keySet());</span><br><span class="line"></span><br><span class="line">    fillOltDetail(currentMap, accounts);</span><br><span class="line"></span><br><span class="line">    fillDownOpticalPower(currentMap, dayId);</span><br><span class="line"></span><br><span class="line">    fillOntModel(currentMap, accounts, dayId);</span><br><span class="line"></span><br><span class="line">    flushBaseDataToTargetTable(</span><br><span class="line">        dayId,</span><br><span class="line">        currentMap</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    accounts.clear();</span><br><span class="line">    accounts = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">    currentMap.clear();</span><br><span class="line">    currentMap = <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">baseRows.clear();</span><br><span class="line">baseRows = <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="31-这次-OOM-排查总结"><a href="#31-这次-OOM-排查总结" class="headerlink" title="31. 这次 OOM 排查总结"></a>31. 这次 OOM 排查总结</h1><p>整个问题最终可以概括成一句话：</p>
+<blockquote>
+<p><strong>不是“320 万条数据不能处理”，而是“不能让 320 万条数据以多个大集合的形式长期同时存活在 JVM 中”。</strong></p>
+</blockquote>
+<p>这次优化最关键的不是某一个 API，而是<strong>控制对象生命周期</strong>。</p>
+<p>核心原则可以总结为：</p>
+<h3 id="原则一：大数据不要一次创建多个副本"><a href="#原则一：大数据不要一次创建多个副本" class="headerlink" title="原则一：大数据不要一次创建多个副本"></a>原则一：大数据不要一次创建多个副本</h3><p>避免：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">List 320万</span><br><span class="line">+</span><br><span class="line">Map 320万</span><br><span class="line">+</span><br><span class="line">EntityList 320万</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="原则二：解除原始容器引用"><a href="#原则二：解除原始容器引用" class="headerlink" title="原则二：解除原始容器引用"></a>原则二：解除原始容器引用</h3><p>仅仅：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">row = <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
+
+<p>不够。</p>
+<p>应该：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">baseRows.set(i, <span class="literal">null</span>);</span><br></pre></td></tr></table></figure>
+
+<p>真正解除：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">List → row</span><br></pre></td></tr></table></figure>
+
+<p>的引用。</p>
+<hr>
+<h3 id="原则三：批次容器只保留当前批"><a href="#原则三：批次容器只保留当前批" class="headerlink" title="原则三：批次容器只保留当前批"></a>原则三：批次容器只保留当前批</h3><p>不要：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Map1 + Map2 + Map3 + Map4 + Map5</span><br></pre></td></tr></table></figure>
+
+<p>同时存在。</p>
+<p>而应该：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">currentMap</span><br><span class="line">    ↓</span><br><span class="line">处理</span><br><span class="line">    ↓</span><br><span class="line">clear</span><br><span class="line">    ↓</span><br><span class="line">下一批</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="原则四：数据库查询结果也要控制规模"><a href="#原则四：数据库查询结果也要控制规模" class="headerlink" title="原则四：数据库查询结果也要控制规模"></a>原则四：数据库查询结果也要控制规模</h3><p>不要一次创建几十万甚至百万任务对象。</p>
+<p>使用：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">固定线程池</span><br><span class="line">+</span><br><span class="line">Semaphore</span><br><span class="line">+</span><br><span class="line">小批量 chunk</span><br></pre></td></tr></table></figure>
+
+<p>控制并发。</p>
+<hr>
+<h3 id="原则五：判断内存问题要看趋势，而不是单点"><a href="#原则五：判断内存问题要看趋势，而不是单点" class="headerlink" title="原则五：判断内存问题要看趋势，而不是单点"></a>原则五：判断内存问题要看趋势，而不是单点</h3><p>看到：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">used heap = 3.7GB</span><br></pre></td></tr></table></figure>
+
+<p>不能马上得出：</p>
+<blockquote>
+<p>“内存泄漏了。”</p>
+</blockquote>
+<p>需要观察：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Map1</span><br><span class="line"> ↓</span><br><span class="line">Map2</span><br><span class="line"> ↓</span><br><span class="line">Map3</span><br><span class="line"> ↓</span><br><span class="line">Map4</span><br></pre></td></tr></table></figure>
+
+<p>释放之后的长期趋势。</p>
+<p>如果：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">3.8GB</span><br><span class="line">↓</span><br><span class="line">2.3GB</span><br></pre></td></tr></table></figure>
+
+<p>说明 GC 有机会回收。</p>
+<p>如果：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">3.0GB</span><br><span class="line">↓</span><br><span class="line">3.3GB</span><br><span class="line">↓</span><br><span class="line">3.6GB</span><br><span class="line">↓</span><br><span class="line">3.9GB</span><br><span class="line">↓</span><br><span class="line">OOM</span><br></pre></td></tr></table></figure>
+
+<p>才应该重点怀疑对象仍然被引用。</p>
+<hr>
+<h1 id="32-最终效果"><a href="#32-最终效果" class="headerlink" title="32. 最终效果"></a>32. 最终效果</h1><p>优化前：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">320 万数据</span><br><span class="line">+</span><br><span class="line">多个大集合</span><br><span class="line">+</span><br><span class="line">大量 Entity</span><br><span class="line">+</span><br><span class="line">并发临时对象</span><br><span class="line">        ↓</span><br><span class="line">JVM 4GB</span><br><span class="line">        ↓</span><br><span class="line">高概率 OOM</span><br></pre></td></tr></table></figure>
+
+<p>优化后：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">320 万数据</span><br><span class="line">        ↓</span><br><span class="line">单 Map</span><br><span class="line">        ↓</span><br><span class="line">64 万窗口</span><br><span class="line">        ↓</span><br><span class="line">OLT / 光衰 / 光猫</span><br><span class="line">        ↓</span><br><span class="line">2000 条一批 INSERT</span><br><span class="line">        ↓</span><br><span class="line">释放当前批</span><br><span class="line">        ↓</span><br><span class="line">下一批</span><br></pre></td></tr></table></figure>
+
+<p>最终在约：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">4050 MB</span><br></pre></td></tr></table></figure>
+
+<p>最大堆限制下，完整处理：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">3,207,860</span><br></pre></td></tr></table></figure>
+
+<p>条基础数据。</p>
+<p>实际结果：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">total inserted = 3,207,859</span><br></pre></td></tr></table></figure>
+
+<p>整个批处理流程成功跑完，没有因为 Java Heap OOM 中断。</p>
+<hr>
+<h1 id="33-后续进一步优化方向"><a href="#33-后续进一步优化方向" class="headerlink" title="33. 后续进一步优化方向"></a>33. 后续进一步优化方向</h1><p>当前方案解决的是<strong>现阶段的 OOM 风险</strong>，但从长期架构来看，还有两个更值得做的方向。</p>
+<h2 id="方向一：数据库分页-流式读取"><a href="#方向一：数据库分页-流式读取" class="headerlink" title="方向一：数据库分页 &#x2F; 流式读取"></a>方向一：数据库分页 &#x2F; 流式读取</h2><p>将：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">getUserScore()</span><br></pre></td></tr></table></figure>
+
+<p>从一次性返回 320 万行：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Map&lt;String, Object&gt;&gt;</span><br></pre></td></tr></table></figure>
+
+<p>改造成：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">分页读取</span><br><span class="line">或</span><br><span class="line">ResultHandler 流式读取</span><br></pre></td></tr></table></figure>
+
+<p>这样可以进一步降低 JVM 内存基线。</p>
+<hr>
+<h2 id="方向二：减少-Java-中间态，更多交给-PostgreSQL"><a href="#方向二：减少-Java-中间态，更多交给-PostgreSQL" class="headerlink" title="方向二：减少 Java 中间态，更多交给 PostgreSQL"></a>方向二：减少 Java 中间态，更多交给 PostgreSQL</h2><p>现在流程是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Java 查询</span><br><span class="line">→ Java Map</span><br><span class="line">→ Java 补数据</span><br><span class="line">→ Java Entity</span><br><span class="line">→ INSERT</span><br><span class="line">→ PostgreSQL UPDATE</span><br></pre></td></tr></table></figure>
+
+<p>进一步可以演化成：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">PostgreSQL JOIN / 聚合</span><br><span class="line">        ↓</span><br><span class="line">最终结果</span><br><span class="line">        ↓</span><br><span class="line">一次性或分批 INSERT</span><br></pre></td></tr></table></figure>
+
+<p>让数据库承担更擅长的数据关联和聚合工作。</p>
+<hr>
+<h1 id="34-最后的经验"><a href="#34-最后的经验" class="headerlink" title="34. 最后的经验"></a>34. 最后的经验</h1><p>大数据量 Java 程序出现 OOM 时，不要第一反应就是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">把 JVM 堆调大</span><br></pre></td></tr></table></figure>
+
+<p>也不要简单认为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">batch.clear()</span><br></pre></td></tr></table></figure>
+
+<p>就等于：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">内存释放</span><br></pre></td></tr></table></figure>
+
+<p>真正应该先回答三个问题：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1. 哪些对象最大？</span><br><span class="line">2. 谁还持有这些对象的引用？</span><br><span class="line">3. 这些对象什么时候才能变成 GC 可回收对象？</span><br></pre></td></tr></table></figure>
+
+<p>当这三个问题被回答清楚之后，OOM 往往就不再是一个神秘问题，而会变成一个非常具体的：</p>
+<blockquote>
+<p><strong>对象数量 × 对象大小 × 引用生命周期</strong></p>
+</blockquote>
+<p>问题。</p>
+<p>对于几百万、几千万规模的数据处理，真正可靠的优化思路始终是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">控制集合大小</span><br><span class="line">+</span><br><span class="line">控制对象生命周期</span><br><span class="line">+</span><br><span class="line">控制并发数量</span><br><span class="line">+</span><br><span class="line">及时解除引用</span><br><span class="line">+</span><br><span class="line">批量处理</span><br><span class="line">+</span><br><span class="line">尽可能让数据库处理数据关联</span><br></pre></td></tr></table></figure>
+
+<p>而不是单纯依赖更大的 JVM Heap。</p>
+
         
         <br />
         <div id="comment-container">

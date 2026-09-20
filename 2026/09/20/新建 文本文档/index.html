@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang=zh-CN>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:description" content="">
+    <meta property="og:type" content="website">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        OOM - undefined
+        
+    </title>
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/aircloud.css">
+
+    
+<link rel="stylesheet" href="/css/gitment.css">
+
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_28hi1hpxx24.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i> 关山难越，谁悲失路之人 </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar ">
+            <img src="/img/avatar.jpg" />
+        </div>
+        <div class="name">
+            <i>zzrve7</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li >
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li >
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li >
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li >
+                <a href="/collect/">
+                    <i class="iconfont icon-shoucang1"></i>
+                    <span>收藏</span>
+                </a>
+            </li>
+            <li >
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%8E-Java-OOM-%E5%88%B0%E7%A8%B3%E5%AE%9A%E8%B7%91%E5%AE%8C-320-%E4%B8%87%E6%95%B0%E6%8D%AE%EF%BC%9A%E4%B8%80%E6%AC%A1-PostgreSQL-Java-%E6%89%B9%E5%A4%84%E7%90%86%E5%86%85%E5%AD%98%E9%97%AE%E9%A2%98%E7%9A%84%E5%AE%8C%E6%95%B4%E6%8E%92%E6%9F%A5%E4%B8%8E%E4%BC%98%E5%8C%96"><span class="toc-text">从 Java OOM 到稳定跑完 320 万数据：一次 PostgreSQL + Java 批处理内存问题的完整排查与优化</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E8%83%8C%E6%99%AF"><span class="toc-text">1. 背景</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-OOM-%E7%9A%84%E6%9C%80%E5%88%9D%E7%8E%B0%E8%B1%A1"><span class="toc-text">2. OOM 的最初现象</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-%E4%B8%BA%E4%BB%80%E4%B9%88-320-%E4%B8%87%E6%9D%A1%E6%95%B0%E6%8D%AE%E4%BC%9A%E8%BF%99%E4%B9%88%E5%90%83%E5%86%85%E5%AD%98%EF%BC%9F"><span class="toc-text">3. 为什么 320 万条数据会这么吃内存？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-%E7%AC%AC%E4%B8%80%E4%B8%AA%E9%94%99%E8%AF%AF%E8%AE%A4%E7%9F%A5%EF%BC%9A%E6%8A%8A-batch-clear-%E5%BD%93%E6%88%90%E2%80%9C%E9%87%8A%E6%94%BE%E5%85%A8%E9%83%A8%E5%86%85%E5%AD%98%E2%80%9D"><span class="toc-text">4. 第一个错误认知：把 batch.clear() 当成“释放全部内存”</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5-%E7%9C%9F%E6%AD%A3%E7%9A%84%E9%97%AE%E9%A2%98%E6%98%AF%E5%A4%A7%E9%9B%86%E5%90%88%E5%90%8C%E6%97%B6%E9%95%BF%E6%9C%9F%E5%AD%98%E6%B4%BB"><span class="toc-text">5. 真正的问题是大集合同时长期存活</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#6-%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%86%85%E5%AD%98%E6%97%A5%E5%BF%97%EF%BC%9A%E7%9C%9F%E6%AD%A3%E6%89%BE%E5%88%B0%E9%97%AE%E9%A2%98"><span class="toc-text">6. 第一次内存日志：真正找到问题</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#7-%E9%94%99%E8%AF%AF%E6%96%B9%E6%A1%88%E4%B8%80%EF%BC%9A%E7%9B%B4%E6%8E%A5%E5%88%9B%E5%BB%BA-5-%E4%B8%AA-Map"><span class="toc-text">7. 错误方案一：直接创建 5 个 Map</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#8-%E9%94%99%E8%AF%AF%E6%96%B9%E6%A1%88%E4%BA%8C%EF%BC%9A%E5%8F%AA%E6%8A%8A-row-null"><span class="toc-text">8. 错误方案二：只把 row &#x3D; null</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#9-%E7%9C%9F%E6%AD%A3%E6%9C%89%E6%95%88%E7%9A%84%E6%96%B9%E5%BC%8F%EF%BC%9A%E8%A7%A3%E9%99%A4-baseRows-%E5%AF%B9%E5%BD%93%E5%89%8D%E6%89%B9%E6%AC%A1%E7%9A%84"><span class="toc-text">9. 真正有效的方式：解除 baseRows 对当前批次的</span></a></li></ol>
+</div>
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-bg" id="search-bg"></div>
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input"/>
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+
+        <div class="index-about-mobile">
+            <i> 关山难越，谁悲失路之人 </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        OOM
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2026-09-20 16:22:11</span></span>
+        
+        <span class="attr">标签：/
+        
+        <a class="tag" href="/tags/#计划" title="计划">计划</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+</span>
+    </div>
+    <div class="post-content ">
+        <h1 id="从-Java-OOM-到稳定跑完-320-万数据：一次-PostgreSQL-Java-批处理内存问题的完整排查与优化"><a href="#从-Java-OOM-到稳定跑完-320-万数据：一次-PostgreSQL-Java-批处理内存问题的完整排查与优化" class="headerlink" title="从 Java OOM 到稳定跑完 320 万数据：一次 PostgreSQL + Java 批处理内存问题的完整排查与优化"></a>从 Java OOM 到稳定跑完 320 万数据：一次 PostgreSQL + Java 批处理内存问题的完整排查与优化</h1><blockquote>
+<p>本文记录一次真实的 Java + PostgreSQL 大数据量处理场景中的 OOM 排查过程。<br>核心问题是：一次性查询约 320 万条用户数据，并在 Java 内存中进行多阶段关联、补充指标和组装实体，最终导致 JVM 堆内存逼近上限甚至 OOM。</p>
+<p>最终通过<strong>滑动窗口 + 单 Map 分批处理 + 及时解除原始 List 引用 + 小批量落库</strong>的方式，将原本存在 OOM 风险的处理流程改造成可以稳定完成 320 万数据处理的方案。</p>
+<p>同时也总结了为什么一些看似合理的优化方式实际上没有降低内存，以及如何通过日志快速判断到底是“内存泄漏”还是“GC 尚未及时回收”。</p>
+</blockquote>
+<hr>
+<h2 id="1-背景"><a href="#1-背景" class="headerlink" title="1. 背景"></a>1. 背景</h2><p>项目是一个运营商数据处理系统，使用：</p>
+<ul>
+<li>Java 8</li>
+<li>Spring Boot</li>
+<li>MyBatis</li>
+<li>PostgreSQL</li>
+</ul>
+<p>其中有一个每日定时任务，用于生成用户质量评分日表：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chf.area_user_score_everyday</span><br></pre></td></tr></table></figure>
+
+<p>每天需要处理约 320 万个宽带账号。</p>
+<p>数据来源涉及多个表：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">主指标</span><br><span class="line">ctcq.tab_access_source_tree</span><br><span class="line"></span><br><span class="line">下行光衰</span><br><span class="line">ctcq.access_dec_yyyy_mm_dd</span><br><span class="line"></span><br><span class="line">光猫</span><br><span class="line">ctcq.t_res_em_itms_user_gateway_yyyy_mm_dd</span><br><span class="line"></span><br><span class="line">带宽</span><br><span class="line">ctcq.wid_serv_day_ed_yyyy_mm_dd</span><br><span class="line"></span><br><span class="line">质差标签</span><br><span class="line">ctcq.jt_cq_maintain_label_share2_day_yyyy_mm_dd</span><br><span class="line"></span><br><span class="line">异常下线</span><br><span class="line">ctcq.group_barrier_alarm_info_yyyyMM</span><br><span class="line"></span><br><span class="line">故障申告</span><br><span class="line">ctcq.fault_complaint_data</span><br></pre></td></tr></table></figure>
+
+<p>整个业务流程大致是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">主查询</span><br><span class="line">  ↓</span><br><span class="line">基础用户指标</span><br><span class="line">  ↓</span><br><span class="line">OLT 信息</span><br><span class="line">  ↓</span><br><span class="line">下行光衰</span><br><span class="line">  ↓</span><br><span class="line">光猫型号</span><br><span class="line">  ↓</span><br><span class="line">写入目标表</span><br><span class="line">  ↓</span><br><span class="line">带宽 UPDATE</span><br><span class="line">  ↓</span><br><span class="line">质差标签 UPDATE</span><br><span class="line">  ↓</span><br><span class="line">异常下线 UPDATE</span><br><span class="line">  ↓</span><br><span class="line">故障申告 UPDATE</span><br></pre></td></tr></table></figure>
+
+<p>问题也正是在这个流程中出现的。</p>
+<hr>
+<h1 id="2-OOM-的最初现象"><a href="#2-OOM-的最初现象" class="headerlink" title="2. OOM 的最初现象"></a>2. OOM 的最初现象</h1><p>JVM 最大堆内存大约为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">4050 MB</span><br></pre></td></tr></table></figure>
+
+<p>但是主查询一次性返回：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">3,207,860</span><br></pre></td></tr></table></figure>
+
+<p>条数据。</p>
+<p>最初的处理方式是：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Map&lt;String, Object&gt;&gt; baseRows = userScoreMapper.getUserScore();</span><br></pre></td></tr></table></figure>
+
+<p>然后再将所有数据放入：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ConcurrentHashMap&lt;String, Map&lt;String, Object&gt;&gt; byAccount</span><br></pre></td></tr></table></figure>
+
+<p>也就是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">PostgreSQL</span><br><span class="line">    ↓</span><br><span class="line">3,207,860 条 List</span><br><span class="line">    ↓</span><br><span class="line">再创建一个 3,207,860 条 Map</span><br><span class="line">    ↓</span><br><span class="line">OLT</span><br><span class="line">    ↓</span><br><span class="line">光衰</span><br><span class="line">    ↓</span><br><span class="line">光猫</span><br><span class="line">    ↓</span><br><span class="line">Entity</span><br><span class="line">    ↓</span><br><span class="line">INSERT</span><br></pre></td></tr></table></figure>
+
+<p>表面上看只是保存了 320 万条数据，但 Java 中真正占用内存的并不仅仅是“数据本身”。</p>
+<hr>
+<h1 id="3-为什么-320-万条数据会这么吃内存？"><a href="#3-为什么-320-万条数据会这么吃内存？" class="headerlink" title="3. 为什么 320 万条数据会这么吃内存？"></a>3. 为什么 320 万条数据会这么吃内存？</h1><p>这是这次排查最重要的一个知识点。</p>
+<p>例如一行数据：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Map&lt;String, Object&gt;</span><br></pre></td></tr></table></figure>
+
+<p>并不是只有几个字段那么简单。</p>
+<p>它至少涉及：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Map 对象</span><br><span class="line">HashMap/LinkedHashMap 内部结构</span><br><span class="line">Entry / Node</span><br><span class="line">String 对象</span><br><span class="line">字段值对象</span><br><span class="line">Integer / Long / BigDecimal</span><br><span class="line">数组</span><br><span class="line">引用</span><br></pre></td></tr></table></figure>
+
+<p>如果数据库一行有十几个甚至几十个字段，那么最终形成的是一个非常庞大的 Java 对象图。</p>
+<p>因此：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Map&lt;String, Object&gt;&gt;</span><br></pre></td></tr></table></figure>
+
+<p>和数据库里的：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">320 万行</span><br></pre></td></tr></table></figure>
+
+<p>并不是一个数量级简单对应关系。</p>
+<hr>
+<h1 id="4-第一个错误认知：把-batch-clear-当成“释放全部内存”"><a href="#4-第一个错误认知：把-batch-clear-当成“释放全部内存”" class="headerlink" title="4. 第一个错误认知：把 batch.clear() 当成“释放全部内存”"></a>4. 第一个错误认知：把 batch.clear() 当成“释放全部内存”</h1><p>最开始代码中存在类似：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">List&lt;AreaUserScoreEverydayEntity&gt; batch = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;(<span class="number">2000</span>);</span><br></pre></td></tr></table></figure>
+
+<p>然后：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">batch.add(entity);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (batch.size() &gt;= <span class="number">2000</span>) &#123;</span><br><span class="line">    mapper.insertBatch(batch);</span><br><span class="line">    batch.clear();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>很多人看到 <code>clear()</code> 会觉得：</p>
+<blockquote>
+<p>“已经清空了，内存不就释放了吗？”</p>
+</blockquote>
+<p>实际上 <code>batch.clear()</code> 只能解除：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">batch → Entity</span><br></pre></td></tr></table></figure>
+
+<p>这一层引用。</p>
+<p>但如果还有：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">baseRows → row</span><br><span class="line">byAccount → row</span><br></pre></td></tr></table></figure>
+
+<p>那么这些 row 仍然存活。</p>
+<p>也就是说：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">batch.clear();</span><br></pre></td></tr></table></figure>
+
+<p>并不能解决真正的大对象生命周期问题。</p>
+<hr>
+<h1 id="5-真正的问题是大集合同时长期存活"><a href="#5-真正的问题是大集合同时长期存活" class="headerlink" title="5. 真正的问题是大集合同时长期存活"></a>5. 真正的问题是大集合同时长期存活</h1><p>原始结构类似：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">baseRows</span><br><span class="line">  ├── row1</span><br><span class="line">  ├── row2</span><br><span class="line">  ├── row3</span><br><span class="line">  ├── ...</span><br><span class="line">  └── row3207860</span><br><span class="line"></span><br><span class="line">byAccount</span><br><span class="line">  ├── account1 → row1</span><br><span class="line">  ├── account2 → row2</span><br><span class="line">  ├── account3 → row3</span><br><span class="line">  ├── ...</span><br><span class="line">  └── account3207860 → row3207860</span><br></pre></td></tr></table></figure>
+
+<p>也就是说：</p>
+<blockquote>
+<p>同样的 320 万个 row 对象，被两个大容器同时持有引用。</p>
+</blockquote>
+<p>虽然 Map 中不是把 row 深拷贝一份，但 Map 自身仍然需要大量 Node、桶数组以及 Key 引用。</p>
+<p>更重要的是，后续还有：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">accounts</span><br><span class="line">loidToAccount</span><br><span class="line">loids</span><br><span class="line">查询结果 List</span><br><span class="line">Entity batch</span><br></pre></td></tr></table></figure>
+
+<p>等临时集合。</p>
+<p>所以整个 JVM 的内存峰值很容易逼近 4GB。</p>
+<hr>
+<h1 id="6-第一次内存日志：真正找到问题"><a href="#6-第一次内存日志：真正找到问题" class="headerlink" title="6. 第一次内存日志：真正找到问题"></a>6. 第一次内存日志：真正找到问题</h1><p>优化前增加 JVM heap 日志：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">logUsedHeap</span><span class="params">(String tag)</span> &#123;</span><br><span class="line">    <span class="type">Runtime</span> <span class="variable">runtime</span> <span class="operator">=</span> Runtime.getRuntime();</span><br><span class="line"></span><br><span class="line">    <span class="type">long</span> <span class="variable">usedHeap</span> <span class="operator">=</span></span><br><span class="line">            runtime.totalMemory() - runtime.freeMemory();</span><br><span class="line"></span><br><span class="line">    logger.info(</span><br><span class="line">        <span class="string">&quot;&#123;&#125;：used heap = &#123;&#125; MB (total = &#123;&#125; MB, max = &#123;&#125; MB)&quot;</span>,</span><br><span class="line">        tag,</span><br><span class="line">        usedHeap / <span class="number">1024</span> / <span class="number">1024</span>,</span><br><span class="line">        runtime.totalMemory() / <span class="number">1024</span> / <span class="number">1024</span>,</span><br><span class="line">        runtime.maxMemory() / <span class="number">1024</span> / <span class="number">1024</span></span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>实际运行结果：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">baseRows total = 3207860</span><br><span class="line"></span><br><span class="line">主查询完成后：</span><br><span class="line">used heap = 2905 MB</span><br><span class="line">total = 4050 MB</span><br><span class="line">max = 4050 MB</span><br></pre></td></tr></table></figure>
+
+<p>这条日志非常关键。</p>
+<p>意味着：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">3,207,860 条 baseRows</span><br><span class="line">        ↓</span><br><span class="line">已经占用了约 2.9 GB Heap</span><br></pre></td></tr></table></figure>
+
+<p>也就是说：</p>
+<blockquote>
+<p><strong>真正的内存压力在主查询一次性物化到 Java 内存之后就已经形成了。</strong></p>
+</blockquote>
+<p>所以这不是简单的：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">batch 太大</span><br></pre></td></tr></table></figure>
+
+<p>而是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">一次把 320 万条 Map 数据全部加载到 JVM</span><br></pre></td></tr></table></figure>
+
+<p>这个设计本身就决定了 JVM 有很高的内存基线。</p>
+<hr>
+<h1 id="7-错误方案一：直接创建-5-个-Map"><a href="#7-错误方案一：直接创建-5-个-Map" class="headerlink" title="7. 错误方案一：直接创建 5 个 Map"></a>7. 错误方案一：直接创建 5 个 Map</h1><p>当时考虑过一种方案：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">320 万</span><br><span class="line"> ↓</span><br><span class="line">Map1：64万</span><br><span class="line">Map2：64万</span><br><span class="line">Map3：64万</span><br><span class="line">Map4：64万</span><br><span class="line">Map5：64万</span><br></pre></td></tr></table></figure>
+
+<p>看起来每个 Map 只有 64 万条。</p>
+<p>但如果代码是：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Map1 = ...</span><br><span class="line">Map2 = ...</span><br><span class="line">Map3 = ...</span><br><span class="line">Map4 = ...</span><br><span class="line">Map5 = ...</span><br></pre></td></tr></table></figure>
+
+<p>然后五个 Map 同时存在，那么：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">64万 × 5 = 320万</span><br></pre></td></tr></table></figure>
+
+<p>数据依旧全部常驻 JVM。</p>
+<p>所以：</p>
+<blockquote>
+<p><strong>把一个大 Map 拆成多个 Map，但同时创建，并不能降低总内存占用。</strong></p>
+</blockquote>
+<p>只是改变了数据的组织形式。</p>
+<hr>
+<h1 id="8-错误方案二：只把-row-null"><a href="#8-错误方案二：只把-row-null" class="headerlink" title="8. 错误方案二：只把 row &#x3D; null"></a>8. 错误方案二：只把 row &#x3D; null</h1><p>例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Map&lt;String, Object&gt; row = baseRows.get(i);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 处理完</span></span><br><span class="line">row = <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
+
+<p>这同样没有真正解决问题。</p>
+<p>因为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">baseRows</span><br><span class="line">   ↓</span><br><span class="line">仍然持有 row</span><br></pre></td></tr></table></figure>
+
+<p>只要 List 中还有：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">baseRows.get(i)</span><br></pre></td></tr></table></figure>
+
+<p>这个对象仍然可达，GC 仍然不能回收。</p>
+<hr>
+<h1 id="9-真正有效的方式：解除-baseRows-对当前批次的"><a href="#9-真正有效的方式：解除-baseRows-对当前批次的" class="headerlink" title="9. 真正有效的方式：解除 baseRows 对当前批次的"></a>9. 真正有效的方式：解除 baseRows 对当前批次的</h1>
+        
+        <br />
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+        <div id="lv-container"></div>
+        <div class="giscus"></div>
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+
+        
+
+        
+
+        
+
+        
+
+    </ul>
+    
+    <p>
+        <span id="busuanzi_container_site_pv">
+            <span id="busuanzi_value_site_pv"></span>PV
+        </span>
+        <span id="busuanzi_container_site_uv">
+            <span id="busuanzi_value_site_uv"></span>UV
+        </span>
+        Created By <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>  Theme <a target="_blank" rel="noopener" href="https://github.com/aircloud/hexo-theme-aircloud">AirCloud</a></p>
+</footer>
+
+
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = ""
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="/js/index.js"></script>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+    <script src="https://giscus.app/client.js"
+    data-repo="zzrve7/zzrve7.github.io"
+    data-repo-id="R_kgDOQnRIeA"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOQnRIeM4C5nXg"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="bottom"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    crossorigin="anonymous"
+    async>
+</script>
+
+
+
+
+</html>

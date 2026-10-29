@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang=zh-CN>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:description" content="">
+    <meta property="og:type" content="website">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        Java-OOM定时任务优化 - undefined
+        
+    </title>
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/aircloud.css">
+
+    
+<link rel="stylesheet" href="/css/gitment.css">
+
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_28hi1hpxx24.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i> 关山难越，谁悲失路之人 </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar ">
+            <img src="/img/avatar.jpg" />
+        </div>
+        <div class="name">
+            <i>zzrve7</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li >
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li >
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li >
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li >
+                <a href="/collect/">
+                    <i class="iconfont icon-shoucang1"></i>
+                    <span>收藏</span>
+                </a>
+            </li>
+            <li >
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%8E-OOM-%E5%88%B0%E7%A8%B3%E5%AE%9A%E8%BF%90%E8%A1%8C%EF%BC%9A%E4%B8%80%E6%AC%A1-Java-%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1%E7%9A%84%E5%86%85%E5%AD%98%E4%B8%8E%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E5%AE%9E%E8%B7%B5"><span class="toc-text">从 OOM 到稳定运行：一次 Java 大数据定时任务的内存与性能优化实践</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E9%97%AE%E9%A2%98%E8%83%8C%E6%99%AF%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BB%BB%E5%8A%A1%E4%BC%9A-OOM%EF%BC%9F"><span class="toc-text">一、问题背景：为什么任务会 OOM？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E5%85%88%E6%98%8E%E7%A1%AE%E4%B8%9A%E5%8A%A1%E5%8F%A3%E5%BE%84%EF%BC%9A%E4%BC%98%E5%8C%96%E4%B8%8D%E8%83%BD%E6%94%B9%E5%8F%98%E7%BB%93%E6%9E%9C"><span class="toc-text">二、先明确业务口径：优化不能改变结果</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E9%A3%8E%E9%99%A9%E5%88%A4%E5%AE%9A%E8%A7%84%E5%88%99"><span class="toc-text">2.1 风险判定规则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E9%A3%8E%E9%99%A9%E6%98%8E%E7%BB%86%E5%8F%AA%E4%BF%9D%E7%95%99%E6%9C%89%E6%95%88%E6%AF%94%E5%AF%B9"><span class="toc-text">2.2 风险明细只保留有效比对</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E4%BC%98%E5%8C%96%E4%B8%80%EF%BC%9A%E9%81%BF%E5%85%8D%E9%80%90%E4%B8%AA-PON-%E5%8F%A3%E6%9F%A5%E8%AF%A2%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-text">三、优化一：避免逐个 PON 口查询数据库</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E4%BD%8E%E6%95%88%E6%A8%A1%E5%BC%8F%EF%BC%9A%E5%BE%AA%E7%8E%AF%E9%87%8C%E6%9F%A5%E8%AF%A2"><span class="toc-text">3.1 低效模式：循环里查询</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E6%94%B9%E4%B8%BA%E5%85%A8%E9%87%8F%E6%9F%A5%E8%AF%A2%E4%B8%80%E6%AC%A1%EF%BC%8C%E5%86%8D%E5%9C%A8%E5%86%85%E5%AD%98%E5%88%86%E7%BB%84"><span class="toc-text">3.2 改为全量查询一次，再在内存分组</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E5%A4%8D%E6%9D%82%E5%BA%A6%E4%B8%8E%E5%8F%96%E8%88%8D"><span class="toc-text">3.3 复杂度与取舍</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E4%BC%98%E5%8C%96%E4%BA%8C%EF%BC%9A%E5%85%89%E8%A1%B0%E6%8C%89-LOID-%E5%8E%BB%E9%87%8D%E3%80%81%E5%88%86%E6%89%B9%E3%80%81%E5%B9%B6%E5%8F%91%E6%9F%A5%E8%AF%A2"><span class="toc-text">四、优化二：光衰按 LOID 去重、分批、并发查询</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E5%85%88%E6%94%B6%E9%9B%86%E5%8E%BB%E9%87%8D-LOID"><span class="toc-text">4.1 先收集去重 LOID</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E6%8C%89%E6%89%B9%E6%9F%A5%E8%AF%A2%EF%BC%8C%E9%81%BF%E5%85%8D%E8%B6%85%E9%95%BF-IN"><span class="toc-text">4.2 按批查询，避免超长 IN</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%9F%A5%E8%AF%A2%E4%B8%8E%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8"><span class="toc-text">4.3 多线程查询与线程安全</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-%E5%B9%B6%E5%8F%91%E4%B8%8D%E7%AD%89%E4%BA%8E%E6%97%A0%E9%99%90%E5%8A%A0%E7%BA%BF%E7%A8%8B"><span class="toc-text">4.4 并发不等于无限加线程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E4%BC%98%E5%8C%96%E4%B8%89%EF%BC%9A%E6%8E%A7%E5%88%B6%E5%B9%B6%E5%8F%91%E4%BB%BB%E5%8A%A1%E6%95%B0%E9%87%8F%EF%BC%8C%E9%81%BF%E5%85%8D%E4%BB%BB%E5%8A%A1%E5%AF%B9%E8%B1%A1%E5%A0%86%E7%A7%AF"><span class="toc-text">五、优化三：控制并发任务数量，避免任务对象堆积</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E7%AD%89%E5%BE%85%E6%89%80%E6%9C%89%E4%BB%BB%E5%8A%A1%E7%BB%93%E6%9D%9F"><span class="toc-text">5.1 等待所有任务结束</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E5%A4%B1%E8%B4%A5%E4%B8%8D%E8%83%BD%E4%BC%AA%E8%A3%85%E6%88%90%E7%A9%BA%E6%95%B0%E6%8D%AE"><span class="toc-text">5.2 失败不能伪装成空数据</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E4%BC%98%E5%8C%96%E5%9B%9B%EF%BC%9A%E5%88%86%E7%BB%84%E5%AE%8C%E6%88%90%E5%90%8E%EF%BC%8C%E6%8C%89-PON-%E5%8F%A3%E5%88%86%E7%89%87%E8%AE%A1%E7%AE%97"><span class="toc-text">六、优化四：分组完成后，按 PON 口分片计算</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E8%83%BD%E9%9A%8F%E6%84%8F%E6%8C%89%E7%94%A8%E6%88%B7%E8%A1%8C%E5%88%87%E7%89%87%EF%BC%9F"><span class="toc-text">6.1 为什么不能随意按用户行切片？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E5%88%86%E7%89%87%E5%A4%84%E7%90%86%E4%BB%A3%E7%A0%81"><span class="toc-text">6.2 分片处理代码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-clear-%E5%92%8C-null-%E5%88%86%E5%88%AB%E6%9C%89%E4%BB%80%E4%B9%88%E4%BD%9C%E7%94%A8%EF%BC%9F"><span class="toc-text">6.3 clear() 和 null 分别有什么作用？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E4%BC%98%E5%8C%96%E4%BA%94%EF%BC%9A%E5%8F%AA%E8%AE%A9%E9%A3%8E%E9%99%A9%E8%B4%A6%E5%8F%B7%E8%BF%9B%E5%85%A5%E6%98%8E%E7%BB%86%E5%92%8C%E5%BE%85%E6%8F%92%E5%85%A5%E5%AE%9E%E4%BD%93%E9%98%B6%E6%AE%B5"><span class="toc-text">七、优化五：只让风险账号进入明细和待插入实体阶段</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E3%80%81%E4%BC%98%E5%8C%96%E5%85%AD%EF%BC%9A%E4%B8%A4%E4%B8%A4%E6%AF%94%E8%BE%83%E7%9A%84%E7%AE%97%E6%B3%95%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="toc-text">八、优化六：两两比较的算法与数据结构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6"><span class="toc-text">8.1 时间复杂度</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-2-%E9%A2%84%E8%A7%A3%E6%9E%90%E6%95%B0%E7%BB%84%EF%BC%8C%E5%87%8F%E5%B0%91%E5%86%85%E5%B1%82%E5%BE%AA%E7%8E%AF%E5%BC%80%E9%94%80"><span class="toc-text">8.2 预解析数组，减少内层循环开销</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-3-%E5%BF%AB%E9%80%9F%E8%B7%B3%E8%BF%87%E6%AD%A3%E5%B8%B8%E6%B3%A2%E5%8A%A8"><span class="toc-text">8.3 快速跳过正常波动</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B5%AE%E7%82%B9%E8%BE%B9%E7%95%8C%E5%BF%85%E9%A1%BB%E8%B0%A8%E6%85%8E"><span class="toc-text">浮点边界必须谨慎</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-4-%E5%8F%AA%E9%81%8D%E5%8E%86%E4%B8%80%E6%AC%A1%E6%97%A0%E5%BA%8F%E5%AF%B9"><span class="toc-text">8.4 只遍历一次无序对</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-5-%E7%94%A8-Map-merge-%E7%B4%AF%E7%A7%AF%E6%9C%80%E9%AB%98%E9%A3%8E%E9%99%A9"><span class="toc-text">8.5 用 Map.merge() 累积最高风险</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-6-%E5%90%8C%E8%B4%A6%E5%8F%B7%E4%B8%8D%E4%B8%8E%E8%87%AA%E5%B7%B1%E6%AF%94%E8%BE%83"><span class="toc-text">8.6 同账号不与自己比较</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B9%9D%E3%80%81%E4%BC%98%E5%8C%96%E4%B8%83%EF%BC%9A%E6%98%8E%E7%BB%86%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%BB%B6%E8%BF%9F%E5%88%9B%E5%BB%BA%E3%80%81%E6%8C%89%E9%9C%80%E6%8B%BC%E6%8E%A5"><span class="toc-text">九、优化七：明细字符串延迟创建、按需拼接</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#9-1-%E5%8F%AA%E5%9C%A8%E9%A3%8E%E9%99%A9%E6%AF%94%E5%AF%B9%E5%87%BA%E7%8E%B0%E6%97%B6%E5%88%9B%E5%BB%BA-StringBuilder"><span class="toc-text">9.1 只在风险比对出现时创建 StringBuilder</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-2-%E4%B8%BA%E4%BB%80%E4%B9%88-String-%E6%8B%BC%E6%8E%A5%E5%8F%AF%E8%83%BD%E9%80%A0%E6%88%90%E5%86%85%E5%AD%98%E5%8E%8B%E5%8A%9B%EF%BC%9F"><span class="toc-text">9.2 为什么 String 拼接可能造成内存压力？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E3%80%81%E4%BC%98%E5%8C%96%E5%85%AB%EF%BC%9A%E6%89%B9%E9%87%8F-INSERT-%E4%B8%8E-PostgreSQL-%E5%8F%82%E6%95%B0%E4%B8%8A%E9%99%90"><span class="toc-text">十、优化八：批量 INSERT 与 PostgreSQL 参数上限</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#10-1-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E9%80%90%E8%A1%8C%E6%8F%92%E5%85%A5%EF%BC%9F"><span class="toc-text">10.1 为什么不逐行插入？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-2-%E6%A0%B9%E6%8D%AE%E5%88%97%E6%95%B0%E8%AE%A1%E7%AE%97%E6%89%B9%E6%AC%A1%E4%B8%8A%E9%99%90"><span class="toc-text">10.2 根据列数计算批次上限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-3-%E5%B9%B6%E5%8F%91%E6%89%B9%E9%87%8F%E6%8F%92%E5%85%A5"><span class="toc-text">10.3 并发批量插入</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%B8%80%E3%80%81%E4%BC%98%E5%8C%96%E4%B9%9D%EF%BC%9A%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1%E9%98%B2%E9%87%8D%E5%85%A5%E4%B8%8E%E4%B8%A4%E4%B8%AA%E4%BB%BB%E5%8A%A1%E4%B9%8B%E9%97%B4%E7%9A%84%E5%8D%8F%E8%B0%83"><span class="toc-text">十一、优化九：定时任务防重入与两个任务之间的协调</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#11-1-%E5%AE%83%E8%83%BD%E9%98%B2%E4%BB%80%E4%B9%88%EF%BC%8C%E4%B8%8D%E8%83%BD%E9%98%B2%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">11.1 它能防什么，不能防什么？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%BA%8C%E3%80%81%E9%A3%8E%E9%99%A9%E5%8D%87%E7%BA%A7%EF%BC%9A%E5%88%86%E6%89%B9%E6%9B%B4%E6%96%B0%E3%80%81%E8%B4%A6%E6%9C%9F%E7%BA%A6%E6%9D%9F%E4%B8%8E%E5%B9%82%E7%AD%89%E6%80%A7"><span class="toc-text">十二、风险升级：分批更新、账期约束与幂等性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#12-1-%E4%B8%BA%E4%BB%80%E4%B9%88-UPDATE-%E5%BF%85%E9%A1%BB%E5%B8%A6-dayId%EF%BC%9F"><span class="toc-text">12.1 为什么 UPDATE 必须带 dayId？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-2-%E5%B9%82%E7%AD%89%E6%80%A7%E4%B8%8D%E6%98%AF%E2%80%9C%E7%94%A8%E4%BA%86-Set%E2%80%9D%E5%B0%B1%E8%B6%B3%E5%A4%9F"><span class="toc-text">12.2 幂等性不是“用了 Set”就足够</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-3-%E9%9C%80%E8%A6%81%E6%B3%A8%E6%84%8F%E7%9A%84%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86"><span class="toc-text">12.3 需要注意的异常处理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%B8%89%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BF%99%E4%BA%9B%E6%8E%AA%E6%96%BD%E8%83%BD%E7%BC%93%E8%A7%A3-OOM%EF%BC%9F"><span class="toc-text">十三、为什么这些措施能缓解 OOM？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%94%B9%E9%80%A0%E5%89%8D%E7%9A%84%E5%85%B8%E5%9E%8B%E9%A3%8E%E9%99%A9"><span class="toc-text">改造前的典型风险</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%94%B9%E9%80%A0%E5%90%8E%E7%9A%84%E4%B8%BB%E8%A6%81%E6%80%9D%E8%B7%AF"><span class="toc-text">改造后的主要思路</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E5%9B%9B%E3%80%81%E5%A6%82%E4%BD%95%E9%AA%8C%E8%AF%81%E4%BC%98%E5%8C%96%E6%98%AF%E5%90%A6%E6%9C%89%E6%95%88%EF%BC%9F"><span class="toc-text">十四、如何验证优化是否有效？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#14-1-%E4%BB%BB%E5%8A%A1%E9%98%B6%E6%AE%B5%E8%80%97%E6%97%B6"><span class="toc-text">14.1 任务阶段耗时</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#14-2-%E5%A0%86%E5%86%85%E5%AD%98%E6%97%A5%E5%BF%97"><span class="toc-text">14.2 堆内存日志</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#14-3-%E5%8F%91%E7%94%9F-OOM-%E6%97%B6%E5%A6%82%E4%BD%95%E5%AE%9A%E4%BD%8D%EF%BC%9F"><span class="toc-text">14.3 发生 OOM 时如何定位？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%BA%94%E3%80%81%E8%BF%99%E4%BB%BD%E5%AE%9E%E7%8E%B0%E4%BB%8D%E9%9C%80%E5%85%B3%E6%B3%A8%E7%9A%84%E9%A3%8E%E9%99%A9%E4%B8%8E%E5%90%8E%E7%BB%AD%E4%BC%98%E5%8C%96"><span class="toc-text">十五、这份实现仍需关注的风险与后续优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#15-1-%E5%85%A8%E9%87%8F%E5%8E%9F%E5%A7%8B%E8%A1%8C%E4%BB%8D%E7%84%B6%E5%B8%B8%E9%A9%BB"><span class="toc-text">15.1 全量原始行仍然常驻</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-2-%E5%8D%95%E4%B8%AA%E8%B6%85%E5%A4%A7-PON-%E5%8F%A3%E4%BB%8D%E5%8F%AF%E8%83%BD-OOM-%E6%88%96%E8%80%97%E6%97%B6%E8%BF%87%E9%95%BF"><span class="toc-text">15.2 单个超大 PON 口仍可能 OOM 或耗时过长</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-3-fiberDetail-%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AD%97%E6%AE%B5%E5%AE%B9%E9%87%8F"><span class="toc-text">15.3 fiberDetail 的数据库字段容量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-4-%E5%88%86%E7%89%87%E6%8F%92%E5%85%A5%E7%9A%84%E5%8E%9F%E5%AD%90%E6%80%A7%E4%B8%8E%E4%BB%BB%E5%8A%A1%E9%87%8D%E8%B7%91"><span class="toc-text">15.4 分片插入的原子性与任务重跑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-5-AtomicBoolean-%E6%98%AF-JVM-%E5%86%85%E9%94%81%EF%BC%8C%E4%B8%8D%E6%98%AF%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="toc-text">15.5 AtomicBoolean 是 JVM 内锁，不是分布式锁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-6-Map-%E5%AD%97%E6%AE%B5%E5%90%8D%E4%B8%8E-SQL-%E5%88%AB%E5%90%8D"><span class="toc-text">15.6 Map 字段名与 SQL 别名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-7-%E7%BC%BA%E5%A4%B1%E5%85%89%E8%A1%B0%E4%B8%8E%E7%BC%BA%E5%A4%B1%E8%AE%BE%E5%A4%87%E6%A0%87%E8%AF%86%E7%9A%84%E4%B8%9A%E5%8A%A1%E5%8F%A3%E5%BE%84"><span class="toc-text">15.7 缺失光衰与缺失设备标识的业务口径</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E5%85%AD%E3%80%81Java-8-%E4%B8%AD%E7%94%A8%E5%88%B0%E7%9A%84%E6%A0%B8%E5%BF%83%E7%9F%A5%E8%AF%86%E7%82%B9%E5%9B%9E%E9%A1%BE"><span class="toc-text">十六、Java 8 中用到的核心知识点回顾</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%B8%83%E3%80%81%E6%80%BB%E7%BB%93"><span class="toc-text">十七、总结</span></a></li></ol></li></ol>
+</div>
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-bg" id="search-bg"></div>
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input"/>
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+
+        <div class="index-about-mobile">
+            <i> 关山难越，谁悲失路之人 </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        Java-OOM定时任务优化
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2026-09-20 16:22:11</span></span>
+        
+        <span class="attr">标签：/
+        
+        <a class="tag" href="/tags/#OOM" title="OOM">OOM</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+</span>
+    </div>
+    <div class="post-content ">
+        <h1 id="从-OOM-到稳定运行：一次-Java-大数据定时任务的内存与性能优化实践"><a href="#从-OOM-到稳定运行：一次-Java-大数据定时任务的内存与性能优化实践" class="headerlink" title="从 OOM 到稳定运行：一次 Java 大数据定时任务的内存与性能优化实践"></a>从 OOM 到稳定运行：一次 Java 大数据定时任务的内存与性能优化实践</h1><blockquote>
+<p>适用场景：Spring 定时任务、Java 8、MyBatis、PostgreSQL；单次处理数百万用户记录，并进行分组内两两比较，最后批量入库。<br>核心目标：在不改变业务口径的前提下，控制峰值内存、减少数据库往返、降低对象与字符串分配，并让任务失败可见。</p>
+</blockquote>
+<hr>
+<h2 id="一、问题背景：为什么任务会-OOM？"><a href="#一、问题背景：为什么任务会-OOM？" class="headerlink" title="一、问题背景：为什么任务会 OOM？"></a>一、问题背景：为什么任务会 OOM？</h2><p>任务 <code>ImportUserFiberIssueJob</code> 的目标是计算同一 PON 口下用户之间的光衰差异，识别光纤风险账号，最终写入 <code>ctcq.user_fiber_issue</code>。</p>
+<p>主要流程：</p>
+<ol>
+<li>查询 PON 口下的活跃账号；</li>
+<li>按 LOID 查询光衰，并回填到用户记录；</li>
+<li>按 <code>telnetip + telnetport</code> 分组；</li>
+<li>在同一 PON 口内进行两两比较；</li>
+<li>为风险账号生成 <code>fiberDetail</code>；</li>
+<li>批量插入结果表。</li>
+</ol>
+<p>这个任务的压力不只来自“查询了多少行”，更来自<strong>计算过程中额外创建了多少对象，以及这些对象能存活多久</strong>。</p>
+<p>假设查询得到数百万行数据。每一行可能是一个 <code>Map</code>，Map 内部又有哈希表节点、键和值等对象。除此之外，任务还会构造：</p>
+<ul>
+<li>去重 LOID 集合和列表；</li>
+<li>LOID → 光衰的映射；</li>
+<li>PON 分组 Map、分组 List；</li>
+<li>风险等级 Map；</li>
+<li>明细 <code>StringBuilder</code>；</li>
+<li>最终待插入实体 Map；</li>
+<li>并发执行时的分片 List、任务对象。</li>
+</ul>
+<p>如果所有阶段的中间结果都长期保留，峰值内存可能远高于数据库返回字段本身的体积。</p>
+<p>可以用一个简化模型理解：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">峰值内存</span><br><span class="line">≈ 全量原始行</span><br><span class="line">+ LOID 集合/查询映射</span><br><span class="line">+ 分组结构</span><br><span class="line">+ 风险计算临时结构</span><br><span class="line">+ 明细字符串</span><br><span class="line">+ 待插入实体</span><br><span class="line">+ 并发分片副本</span><br></pre></td></tr></table></figure>
+
+<p>因此，这次优化不是简单地“把 JVM 堆调大”，而是从<strong>数据生命周期、查询模式、计算过程、批量写入和并发控制</strong>几个方面一起处理。</p>
+<hr>
+<h2 id="二、先明确业务口径：优化不能改变结果"><a href="#二、先明确业务口径：优化不能改变结果" class="headerlink" title="二、先明确业务口径：优化不能改变结果"></a>二、先明确业务口径：优化不能改变结果</h2><h3 id="2-1-风险判定规则"><a href="#2-1-风险判定规则" class="headerlink" title="2.1 风险判定规则"></a>2.1 风险判定规则</h3><p>同一个 PON 口内，用户两两比较：</p>
+<p>[<br>diff &#x3D; |light_1-light_2|<br>]</p>
+<p>规则如下：</p>
+<table>
+<thead>
+<tr>
+<th align="right">光衰差值</th>
+<th>风险等级</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="right"><code>diff &lt;= 10</code></td>
+<td>无风险</td>
+</tr>
+<tr>
+<td align="right"><code>10 &lt; diff &lt;= 15</code></td>
+<td>低风险</td>
+</tr>
+<tr>
+<td align="right"><code>diff &gt; 15</code></td>
+<td>中风险</td>
+</tr>
+</tbody></table>
+<p>每个账号取其参与的所有有效比较中的最高风险：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">中风险 &gt; 低风险 &gt; 无风险</span><br></pre></td></tr></table></figure>
+
+<p>对应代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> String <span class="title function_">judgeRiskLevel</span><span class="params">(BigDecimal diff)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (diff == <span class="literal">null</span> || diff.compareTo(RISK_LOW_THRESHOLD) &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> RISK_NONE;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (diff.compareTo(RISK_MID_THRESHOLD) &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> RISK_MID;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> RISK_LOW;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里使用 <code>BigDecimal.compareTo()</code> 比较数值，而不是 <code>equals()</code>。</p>
+<p>例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> <span class="title class_">BigDecimal</span>(<span class="string">&quot;10.0&quot;</span>).compareTo(<span class="keyword">new</span> <span class="title class_">BigDecimal</span>(<span class="string">&quot;10.00&quot;</span>)) == <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<p>但 <code>BigDecimal.equals()</code> 会比较数值和 scale，因此上述两个对象并不相等。做业务阈值判断时，通常应该使用 <code>compareTo()</code>。</p>
+<h3 id="2-2-风险明细只保留有效比对"><a href="#2-2-风险明细只保留有效比对" class="headerlink" title="2.2 风险明细只保留有效比对"></a>2.2 风险明细只保留有效比对</h3><p>明细格式：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(自身光衰)对方账号：差值&amp;对方账号：差值</span><br></pre></td></tr></table></figure>
+
+<p>示例：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(0.0)n0451005901293：26.86&amp;n0451007702367：23.8</span><br></pre></td></tr></table></figure>
+
+<p>只记录 <code>diff &gt; 10</code> 的比对。差值不超过 10 的比对既不产出风险，也不写明细。</p>
+<p>这一点对内存影响很大：当一个 PON 口有大量用户，而绝大多数比对属于正常波动时，如果把全部比对都拼接成字符串，会制造海量临时对象和超长明细。</p>
+<p>**重要业务前提：**只有在业务确认“无风险比对不需要追溯”的情况下，才能这样收窄明细。若审计要求保留全部比对，则不能直接采用。</p>
+<hr>
+<h2 id="三、优化一：避免逐个-PON-口查询数据库"><a href="#三、优化一：避免逐个-PON-口查询数据库" class="headerlink" title="三、优化一：避免逐个 PON 口查询数据库"></a>三、优化一：避免逐个 PON 口查询数据库</h2><h3 id="3-1-低效模式：循环里查询"><a href="#3-1-低效模式：循环里查询" class="headerlink" title="3.1 低效模式：循环里查询"></a>3.1 低效模式：循环里查询</h3><p>一种直观但低效的做法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (PonPort ponPort : ponPorts) &#123;</span><br><span class="line">    List&lt;User&gt; users = mapper.getUsersByPon(ponPort);</span><br><span class="line">    calculateRisk(users);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>假设有上万个 PON 口，就可能发起上万次数据库请求。若每次 SQL 都需要关联活跃用户、设备树和分区数据，数据库往返与重复执行计划、重复扫描成本会非常明显。</p>
+<p>问题并不是循环本身，而是把原本可以批量完成的工作拆成了大量小查询。</p>
+<h3 id="3-2-改为全量查询一次，再在内存分组"><a href="#3-2-改为全量查询一次，再在内存分组" class="headerlink" title="3.2 改为全量查询一次，再在内存分组"></a>3.2 改为全量查询一次，再在内存分组</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Map&lt;String, Object&gt;&gt; recordList = userFiberIssueMapper.getPonActive();</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (recordList == <span class="literal">null</span> || recordList.isEmpty()) &#123;</span><br><span class="line">    logger.warn(<span class="string">&quot;未查询到PON口活跃用户数据&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;无数据&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后由 Java 分组：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> List&lt;List&lt;Map&lt;String, Object&gt;&gt;&gt; <span class="title function_">groupByPonPort</span><span class="params">(</span></span><br><span class="line"><span class="params">        List&lt;Map&lt;String, Object&gt;&gt; recordList)</span> &#123;</span><br><span class="line"></span><br><span class="line">    Map&lt;String, List&lt;Map&lt;String, Object&gt;&gt;&gt; group = <span class="keyword">new</span> <span class="title class_">LinkedHashMap</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (Map&lt;String, Object&gt; row : recordList) &#123;</span><br><span class="line">        group.computeIfAbsent(ponKey(row), k -&gt; <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;()).add(row);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;(group.values());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>分组键：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> String <span class="title function_">ponKey</span><span class="params">(Map&lt;String, Object&gt; row)</span> &#123;</span><br><span class="line">    <span class="type">String</span> <span class="variable">telnetIp</span> <span class="operator">=</span> getNullableString(row, <span class="string">&quot;telnetip&quot;</span>);</span><br><span class="line">    <span class="type">String</span> <span class="variable">telnetPort</span> <span class="operator">=</span> getNullableString(row, <span class="string">&quot;telnetport&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> (telnetIp == <span class="literal">null</span> ? <span class="string">&quot;&quot;</span> : telnetIp)</span><br><span class="line">            + <span class="string">&quot;|&quot;</span> + (telnetPort == <span class="literal">null</span> ? <span class="string">&quot;&quot;</span> : telnetPort);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-复杂度与取舍"><a href="#3-3-复杂度与取舍" class="headerlink" title="3.3 复杂度与取舍"></a>3.3 复杂度与取舍</h3><ul>
+<li>数据库访问次数：从“每个 PON 口一次”降低为全量查询一次；</li>
+<li>分组时间：平均情况下为 <code>O(N)</code>；</li>
+<li>分组空间：需要额外的 Map&#x2F;List 引用结构；</li>
+<li>总体收益：用可控的内存结构换取大量数据库往返的减少。</li>
+</ul>
+<p>这里必须注意：<strong>全量查询不代表没有内存风险。</strong> 如果原始结果本身已经大到无法容纳，就应该进一步考虑数据库游标、按稳定键分页、临时表或分区处理等方案。分页时必须确保同一 PON 口不会被拆散，或采用能保证口内数据完整性的处理设计。</p>
+<hr>
+<h2 id="四、优化二：光衰按-LOID-去重、分批、并发查询"><a href="#四、优化二：光衰按-LOID-去重、分批、并发查询" class="headerlink" title="四、优化二：光衰按 LOID 去重、分批、并发查询"></a>四、优化二：光衰按 LOID 去重、分批、并发查询</h2><p>同一 LOID 可能在查询结果中出现多次。如果逐行查询光衰，会产生大量重复请求。</p>
+<h3 id="4-1-先收集去重-LOID"><a href="#4-1-先收集去重-LOID" class="headerlink" title="4.1 先收集去重 LOID"></a>4.1 先收集去重 LOID</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Set&lt;String&gt; loidSet = <span class="keyword">new</span> <span class="title class_">LinkedHashSet</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (Map&lt;String, Object&gt; row : recordList) &#123;</span><br><span class="line">    <span class="type">String</span> <span class="variable">loid</span> <span class="operator">=</span> getNullableString(row, <span class="string">&quot;loid&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> (loid != <span class="literal">null</span> &amp;&amp; !loid.isEmpty()) &#123;</span><br><span class="line">        loidSet.add(loid);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">List&lt;String&gt; loidList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;(loidSet);</span><br></pre></td></tr></table></figure>
+
+<p><code>LinkedHashSet</code> 同时具备：</p>
+<ul>
+<li>去重；</li>
+<li>保留首次插入顺序。</li>
+</ul>
+<p>如果不关心顺序，也可以选择普通 <code>HashSet</code>。</p>
+<h3 id="4-2-按批查询，避免超长-IN"><a href="#4-2-按批查询，避免超长-IN" class="headerlink" title="4.2 按批查询，避免超长 IN"></a>4.2 按批查询，避免超长 IN</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">DOWN_DECAY_QUERY_CHUNK</span> <span class="operator">=</span> <span class="number">5000</span>;</span><br></pre></td></tr></table></figure>
+
+<p>按 5000 个 LOID 切片：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; loidList.size(); i += DOWN_DECAY_QUERY_CHUNK) &#123;</span><br><span class="line">    <span class="type">int</span> <span class="variable">end</span> <span class="operator">=</span> Math.min(i + DOWN_DECAY_QUERY_CHUNK, loidList.size());</span><br><span class="line">    List&lt;String&gt; chunk = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;(loidList.subList(i, end));</span><br><span class="line">    <span class="comment">// 查询当前批次</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>批次大小不是越大越好：</p>
+<ul>
+<li>太大：SQL 参数、解析成本、单次查询耗时、结果集内存压力上升；</li>
+<li>太小：数据库往返次数增加；</li>
+<li>应结合 SQL 执行计划、连接池、数据库负载和实测数据调整。</li>
+</ul>
+<h3 id="4-3-多线程查询与线程安全"><a href="#4-3-多线程查询与线程安全" class="headerlink" title="4.3 多线程查询与线程安全"></a>4.3 多线程查询与线程安全</h3><p>代码用固定线程池控制并发：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">QUERY_THREAD_COUNT</span> <span class="operator">=</span> <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line">Map&lt;String, Object&gt; lightMap = <span class="keyword">new</span> <span class="title class_">ConcurrentHashMap</span>&lt;&gt;();</span><br></pre></td></tr></table></figure>
+
+<p>查询结果回填到并发 Map：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (Map&lt;String, Object&gt; downRow : downRows) &#123;</span><br><span class="line">    <span class="type">String</span> <span class="variable">loid</span> <span class="operator">=</span> getNullableString(downRow, <span class="string">&quot;loid&quot;</span>);</span><br><span class="line">    <span class="type">Object</span> <span class="variable">light</span> <span class="operator">=</span> downRow.get(<span class="string">&quot;light&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (loid != <span class="literal">null</span> &amp;&amp; !loid.isEmpty() &amp;&amp; light != <span class="literal">null</span>) &#123;</span><br><span class="line">        lightMap.put(loid, light);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>为什么使用 <code>ConcurrentHashMap</code>？</p>
+<p>多个查询任务可能同时写入 <code>lightMap</code>。普通 <code>HashMap</code> 不适合被多个线程无同步地并发修改。<code>ConcurrentHashMap</code> 支持并发访问。</p>
+<p>另一个细节：<code>ConcurrentHashMap</code> 不允许 <code>null</code> 键和值，因此这里跳过 <code>light == null</code> 的记录。后续回填时查不到该 LOID，就会得到 <code>null</code>，业务效果一致。</p>
+<h3 id="4-4-并发不等于无限加线程"><a href="#4-4-并发不等于无限加线程" class="headerlink" title="4.4 并发不等于无限加线程"></a>4.4 并发不等于无限加线程</h3><p>线程数应受数据库连接池约束。比如连接池最大连接数为 10，查询并发设置为 5，还需要给其他业务请求、任务和事务留出连接余量。</p>
+<p>并发查询的收益来自 I&#x2F;O 等待期间让其他任务继续执行，不代表 SQL 本身一定更快。若数据库已经是瓶颈，提高并发可能造成：</p>
+<ul>
+<li>连接池排队；</li>
+<li>数据库 CPU&#x2F;IO 压力增加；</li>
+<li>锁竞争和缓存争用；</li>
+<li>单条 SQL 延迟上升。</li>
+</ul>
+<p>因此需要观察连接池活跃数、等待数、SQL 耗时和数据库资源，而不是只看线程数。</p>
+<hr>
+<h2 id="五、优化三：控制并发任务数量，避免任务对象堆积"><a href="#五、优化三：控制并发任务数量，避免任务对象堆积" class="headerlink" title="五、优化三：控制并发任务数量，避免任务对象堆积"></a>五、优化三：控制并发任务数量，避免任务对象堆积</h2><p>如果对每一个分片都立即 <code>submit()</code>，而分片数量非常多，就可能创建大量排队任务对象。</p>
+<p>本任务通过固定线程池和 <code>Semaphore</code> 限制在途任务。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ExecutorService</span> <span class="variable">executor</span> <span class="operator">=</span> Executors.newFixedThreadPool(threadCount);</span><br><span class="line"><span class="type">Semaphore</span> <span class="variable">inFlight</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Semaphore</span>(threadCount);</span><br></pre></td></tr></table></figure>
+
+<p>提交前获取许可：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">inFlight.acquire();</span><br><span class="line"></span><br><span class="line">executor.execute(() -&gt; &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        task.accept(chunk);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        inFlight.release();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>其核心思想是：</p>
+<ol>
+<li>最多允许 <code>threadCount</code> 个任务处于执行&#x2F;在途状态；</li>
+<li>许可用完后，提交线程阻塞；</li>
+<li>有任务完成并释放许可后，才能继续提交；</li>
+<li>避免一次性创建大量待执行任务。</li>
+</ol>
+<h3 id="5-1-等待所有任务结束"><a href="#5-1-等待所有任务结束" class="headerlink" title="5.1 等待所有任务结束"></a>5.1 等待所有任务结束</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">inFlight.acquire(threadCount);</span><br><span class="line">inFlight.release(threadCount);</span><br></pre></td></tr></table></figure>
+
+<p>这段代码等待所有许可归还。它建立在“每个成功提交的任务最终都会执行到 <code>finally</code> 并释放许可”的前提上。</p>
+<p>线程池随后关闭：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">executor.shutdown();</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (!executor.awaitTermination(<span class="number">5</span>, TimeUnit.MINUTES)) &#123;</span><br><span class="line">    logger.warn(<span class="string">&quot;线程池未在超时时间内完全退出&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-2-失败不能伪装成空数据"><a href="#5-2-失败不能伪装成空数据" class="headerlink" title="5.2 失败不能伪装成空数据"></a>5.2 失败不能伪装成空数据</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">AtomicInteger</span> <span class="variable">failCount</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AtomicInteger</span>(<span class="number">0</span>);</span><br><span class="line">AtomicReference&lt;Exception&gt; firstException = <span class="keyword">new</span> <span class="title class_">AtomicReference</span>&lt;&gt;();</span><br></pre></td></tr></table></figure>
+
+<p>任务失败时记录异常：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    task.accept(chunk);</span><br><span class="line">&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    failCount.incrementAndGet();</span><br><span class="line">    firstException.compareAndSet(<span class="literal">null</span>, e);</span><br><span class="line">    logger.error(<span class="string">&quot;分片执行失败&quot;</span>, e);</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    inFlight.release();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>所有任务结束后：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (failCount.get() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(</span><br><span class="line">            <span class="string">&quot;存在 &quot;</span> + failCount.get() + <span class="string">&quot; 个失败分片，任务终止&quot;</span>,</span><br><span class="line">            firstException.get());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这种设计比“某批查询失败就返回空列表”安全，因为后者可能把数据库异常误当成“没有光衰数据”，导致错误计算并入库。</p>
+<p>**并发工具的适用边界：**当前实现使用 <code>Semaphore</code> 做背压，适合这种有限并发的分批任务；如果项目已经使用 <code>CompletionService</code>、线程池队列治理或统一任务框架，也可以使用项目已有方案，关键是限制在途任务并正确收集异常。</p>
+<hr>
+<h2 id="六、优化四：分组完成后，按-PON-口分片计算"><a href="#六、优化四：分组完成后，按-PON-口分片计算" class="headerlink" title="六、优化四：分组完成后，按 PON 口分片计算"></a>六、优化四：分组完成后，按 PON 口分片计算</h2><p>风险计算只发生在同一个 PON 口内部，不同口之间没有计算依赖。</p>
+<p>因此分片边界应当是<strong>完整的 PON 口</strong>，而不是用户行。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">PON_CHUNK_SIZE</span> <span class="operator">=</span> <span class="number">200</span>;</span><br></pre></td></tr></table></figure>
+
+<p>处理流程：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">全量账号</span><br><span class="line">   ↓</span><br><span class="line">按 PON 口分组</span><br><span class="line">   ↓</span><br><span class="line">每次取 200 个完整 PON 口</span><br><span class="line">   ↓</span><br><span class="line">计算风险、生成风险实体</span><br><span class="line">   ↓</span><br><span class="line">批量插入</span><br><span class="line">   ↓</span><br><span class="line">释放本片数据</span><br><span class="line">   ↓</span><br><span class="line">下一片</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-1-为什么不能随意按用户行切片？"><a href="#6-1-为什么不能随意按用户行切片？" class="headerlink" title="6.1 为什么不能随意按用户行切片？"></a>6.1 为什么不能随意按用户行切片？</h3><p>假设一个 PON 口有 100 个账号。如果按行拆成两个 50 行分片，那么第一片和第二片之间的用户不会互相比较，风险结果就不完整。</p>
+<p>按完整 PON 口分片，既保留计算口径，又能限制明细和实体的累计规模。</p>
+<h3 id="6-2-分片处理代码"><a href="#6-2-分片处理代码" class="headerlink" title="6.2 分片处理代码"></a>6.2 分片处理代码</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">from</span> <span class="operator">=</span> <span class="number">0</span>; from &lt; totalGroups; from += PON_CHUNK_SIZE) &#123;</span><br><span class="line">    <span class="type">int</span> <span class="variable">to</span> <span class="operator">=</span> Math.min(from + PON_CHUNK_SIZE, totalGroups);</span><br><span class="line"></span><br><span class="line">    List&lt;Map&lt;String, Object&gt;&gt; entityList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">g</span> <span class="operator">=</span> from; g &lt; to; g++) &#123;</span><br><span class="line">        List&lt;Map&lt;String, Object&gt;&gt; rows = ponGroups.get(g);</span><br><span class="line">        <span class="keyword">if</span> (rows == <span class="literal">null</span> || rows.isEmpty()) &#123;</span><br><span class="line">            ponGroups.set(g, <span class="literal">null</span>);</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        calculateRiskLevel(rows);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (Map&lt;String, Object&gt; row : rows) &#123;</span><br><span class="line">            <span class="type">String</span> <span class="variable">riskLevel</span> <span class="operator">=</span> getNullableString(row, <span class="string">&quot;riskLevel&quot;</span>);</span><br><span class="line">            <span class="keyword">if</span> (riskLevel == <span class="literal">null</span> || RISK_NONE.equals(riskLevel)) &#123;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            entityList.add(toEntityMap(row, dayId));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        rows.clear();</span><br><span class="line">        ponGroups.set(g, <span class="literal">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> <span class="variable">inserted</span> <span class="operator">=</span> insertConcurrently(entityList);</span><br><span class="line">    entityList.clear();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-3-clear-和-null-分别有什么作用？"><a href="#6-3-clear-和-null-分别有什么作用？" class="headerlink" title="6.3 clear() 和 null 分别有什么作用？"></a>6.3 <code>clear()</code> 和 <code>null</code> 分别有什么作用？</h3><p>这是这次内存治理中的关键知识点。</p>
+<ul>
+<li><code>rows.clear()</code>：清空当前分组 List 持有的元素引用；</li>
+<li><code>ponGroups.set(g, null)</code>：让外层分组列表不再引用这个分组 List；</li>
+<li><code>entityList.clear()</code>：插入完成后，释放实体列表持有的 Map 引用。</li>
+</ul>
+<p>但要准确理解：<strong><code>clear()</code> 不是手动释放堆内存，也不保证 JVM 立刻归还内存。</strong> 它只是断开对象引用。当对象不再被任何 GC Root 可达时，才有资格被垃圾回收。堆内存何时回收由 GC 决定。</p>
+<p>此外，<code>clear()</code> 不会把一个对象的容量自动缩到最小；它主要清除元素引用。当前代码将大对象的引用链及时断开，减少对象长期存活的机会。</p>
+<hr>
+<h2 id="七、优化五：只让风险账号进入明细和待插入实体阶段"><a href="#七、优化五：只让风险账号进入明细和待插入实体阶段" class="headerlink" title="七、优化五：只让风险账号进入明细和待插入实体阶段"></a>七、优化五：只让风险账号进入明细和待插入实体阶段</h2><p>无风险账号仍然参与比较，但不落库。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (Map&lt;String, Object&gt; row : rows) &#123;</span><br><span class="line">    <span class="type">String</span> <span class="variable">riskLevel</span> <span class="operator">=</span> getNullableString(row, <span class="string">&quot;riskLevel&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (riskLevel == <span class="literal">null</span> || RISK_NONE.equals(riskLevel)) &#123;</span><br><span class="line">        <span class="keyword">continue</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    entityList.add(toEntityMap(row, dayId));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样可以减少：</p>
+<ul>
+<li>最终实体 Map 的数量；</li>
+<li>批量 INSERT 的行数；</li>
+<li>明细长期存活的对象数量；</li>
+<li>数据库写入与 WAL 产生量（实际收益需结合数据库观测）。</li>
+</ul>
+<p>不过，风险账号的 <code>fiberDetail</code> 仍可能很大，尤其是异常大口中，单个账号可能与大量账号产生风险比对。因此后续仍需监控最大口径和最大明细长度。</p>
+<hr>
+<h2 id="八、优化六：两两比较的算法与数据结构"><a href="#八、优化六：两两比较的算法与数据结构" class="headerlink" title="八、优化六：两两比较的算法与数据结构"></a>八、优化六：两两比较的算法与数据结构</h2><h3 id="8-1-时间复杂度"><a href="#8-1-时间复杂度" class="headerlink" title="8.1 时间复杂度"></a>8.1 时间复杂度</h3><p>一个 PON 口有 <code>n</code> 个用户时，全部两两比较次数为：</p>
+<p>[<br>\frac{n(n-1)}{2}<br>]</p>
+<p>即时间复杂度为：</p>
+<p>[<br>O(n^2)<br>]</p>
+<p>示例：</p>
+<table>
+<thead>
+<tr>
+<th align="right">用户数</th>
+<th align="right">两两比较次数</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="right">100</td>
+<td align="right">4,950</td>
+</tr>
+<tr>
+<td align="right">1,000</td>
+<td align="right">499,500</td>
+</tr>
+<tr>
+<td align="right">5,000</td>
+<td align="right">12,497,500</td>
+</tr>
+<tr>
+<td align="right">10,000</td>
+<td align="right">49,995,000</td>
+</tr>
+</tbody></table>
+<p>这意味着大口的计算量会迅速增长。分片能够控制内存生命周期，却不能消除单个超大 PON 口的二次复杂度。</p>
+<h3 id="8-2-预解析数组，减少内层循环开销"><a href="#8-2-预解析数组，减少内层循环开销" class="headerlink" title="8.2 预解析数组，减少内层循环开销"></a>8.2 预解析数组，减少内层循环开销</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">BigDecimal[] lights = <span class="keyword">new</span> <span class="title class_">BigDecimal</span>[totalCount];</span><br><span class="line"><span class="type">double</span>[] lightValues = <span class="keyword">new</span> <span class="title class_">double</span>[totalCount];</span><br><span class="line"><span class="type">boolean</span>[] hasLight = <span class="keyword">new</span> <span class="title class_">boolean</span>[totalCount];</span><br><span class="line">String[] accounts = <span class="keyword">new</span> <span class="title class_">String</span>[totalCount];</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">k</span> <span class="operator">=</span> <span class="number">0</span>; k &lt; totalCount; k++) &#123;</span><br><span class="line">    Map&lt;String, Object&gt; row = recordList.get(k);</span><br><span class="line"></span><br><span class="line">    <span class="type">BigDecimal</span> <span class="variable">light</span> <span class="operator">=</span> toBigDecimal(row.get(<span class="string">&quot;light&quot;</span>));</span><br><span class="line">    lights[k] = light;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (light != <span class="literal">null</span>) &#123;</span><br><span class="line">        lightValues[k] = light.doubleValue();</span><br><span class="line">        hasLight[k] = <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    accounts[k] = getNullableString(row, <span class="string">&quot;account&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>为什么这么做？</p>
+<p>如果在每次比较中都执行：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">row.get(<span class="string">&quot;light&quot;</span>)</span><br><span class="line">toBigDecimal(...)</span><br><span class="line">getNullableString(...)</span><br></pre></td></tr></table></figure>
+
+<p>就会反复做 Map 查找、类型判断和字符串解析。</p>
+<p>提前解析后，内层循环主要使用数组访问，减少重复工作。</p>
+<h3 id="8-3-快速跳过正常波动"><a href="#8-3-快速跳过正常波动" class="headerlink" title="8.3 快速跳过正常波动"></a>8.3 快速跳过正常波动</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">double</span> <span class="variable">d</span> <span class="operator">=</span> vi - lightValues[j];</span><br><span class="line"><span class="keyword">if</span> (d &lt; <span class="number">0</span>) &#123;</span><br><span class="line">    d = -d;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (d &lt;= FAST_SKIP_THRESHOLD) &#123;</span><br><span class="line">    <span class="keyword">continue</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>只有超过快速阈值的比较才进入精确计算：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">BigDecimal</span> <span class="variable">diff</span> <span class="operator">=</span> lightI.subtract(lights[j]).abs();</span><br><span class="line"><span class="type">String</span> <span class="variable">level</span> <span class="operator">=</span> judgeRiskLevel(diff);</span><br></pre></td></tr></table></figure>
+
+<p>这是典型的<strong>快路径 + 精确路径</strong>优化：</p>
+<ul>
+<li>快路径：用低成本运算过滤绝大多数普通情况；</li>
+<li>精确路径：对可能产生风险的情况执行精确判定。</li>
+</ul>
+<h4 id="浮点边界必须谨慎"><a href="#浮点边界必须谨慎" class="headerlink" title="浮点边界必须谨慎"></a>浮点边界必须谨慎</h4><p>当前代码中的 <code>FAST_SKIP_THRESHOLD = 10.0D</code>，其注释强调业务数据精度和 double 误差评估。</p>
+<p>需要指出一个通用原则：<strong>浮点误差不能仅凭“通常很小”就认定不会漏判。</strong> 如果数据来源、精度或计算过程变化，快速跳过条件可能需要重新验证。</p>
+<p>例如，如果业务允许任意精度小数，那么理论上可能存在一个真实差值略大于 10、但 double 运算结果不大于 10 的边界情况。</p>
+<p>更稳妥的工程做法：</p>
+<ol>
+<li>明确数据库字段类型、输入精度和取值范围；</li>
+<li>用边界样本验证 <code>10</code>、<code>10.0001</code>、<code>15</code>、<code>15.0001</code> 等值；</li>
+<li>对比优化算法与纯 <code>BigDecimal</code> 参考算法的结果；</li>
+<li>若要求严格数值正确性，可采用整数定标、保守误差界，或直接精确计算。</li>
+</ol>
+<p>不能为了性能牺牲业务正确性。</p>
+<h3 id="8-4-只遍历一次无序对"><a href="#8-4-只遍历一次无序对" class="headerlink" title="8.4 只遍历一次无序对"></a>8.4 只遍历一次无序对</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; totalCount; i++) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> i + <span class="number">1</span>; j &lt; totalCount; j++) &#123;</span><br><span class="line">        <span class="comment">// 比较 i 与 j</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用 <code>j = i + 1</code>，每一对用户只比较一次，避免同时比较 <code>(A, B)</code> 和 <code>(B, A)</code>。</p>
+<p>当两者产生风险时，双方都更新：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">appendDetail(accountDetailMap, accountI, lightI, accountJ, diff);</span><br><span class="line">appendDetail(accountDetailMap, accountJ, lights[j], accountI, diff);</span><br><span class="line"></span><br><span class="line">accountRiskMap.merge(accountI, level, <span class="built_in">this</span>::higherRisk);</span><br><span class="line">accountRiskMap.merge(accountJ, level, <span class="built_in">this</span>::higherRisk);</span><br></pre></td></tr></table></figure>
+
+<h3 id="8-5-用-Map-merge-累积最高风险"><a href="#8-5-用-Map-merge-累积最高风险" class="headerlink" title="8.5 用 Map.merge() 累积最高风险"></a>8.5 用 <code>Map.merge()</code> 累积最高风险</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> String <span class="title function_">higherRisk</span><span class="params">(String a, String b)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> riskPriority(a) &gt;= riskPriority(b) ? a : b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">accountRiskMap.merge(accountI, level, <span class="built_in">this</span>::higherRisk);</span><br></pre></td></tr></table></figure>
+
+<p><code>Map.merge()</code> 的含义是：</p>
+<ul>
+<li>key 不存在：放入新值；</li>
+<li>key 已存在：用合并函数计算新值。</li>
+</ul>
+<p>这里用它维护账号参与全部比较后的最高风险等级。</p>
+<h3 id="8-6-同账号不与自己比较"><a href="#8-6-同账号不与自己比较" class="headerlink" title="8.6 同账号不与自己比较"></a>8.6 同账号不与自己比较</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (accountI != <span class="literal">null</span> &amp;&amp; accountI.equals(accountJ)) &#123;</span><br><span class="line">    <span class="keyword">continue</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意：当前风险和明细 Map 的 key 是账号。如果同一个账号在同一 PON 口出现多行，它们共享同一风险与明细。这是代码明确采用的口径。</p>
+<p>如果同一账号的多行数据可能对应不同 LOID、光衰或设备归属，应该先确认是否需要去重或重新定义实体唯一键。否则“账号聚合”可能隐藏数据质量问题。</p>
+<hr>
+<h2 id="九、优化七：明细字符串延迟创建、按需拼接"><a href="#九、优化七：明细字符串延迟创建、按需拼接" class="headerlink" title="九、优化七：明细字符串延迟创建、按需拼接"></a>九、优化七：明细字符串延迟创建、按需拼接</h2><h3 id="9-1-只在风险比对出现时创建-StringBuilder"><a href="#9-1-只在风险比对出现时创建-StringBuilder" class="headerlink" title="9.1 只在风险比对出现时创建 StringBuilder"></a>9.1 只在风险比对出现时创建 <code>StringBuilder</code></h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">appendDetail</span><span class="params">(Map&lt;String, StringBuilder&gt; detailMap,</span></span><br><span class="line"><span class="params">                          String key,</span></span><br><span class="line"><span class="params">                          BigDecimal selfLight,</span></span><br><span class="line"><span class="params">                          String otherAcc,</span></span><br><span class="line"><span class="params">                          BigDecimal diff)</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="type">StringBuilder</span> <span class="variable">sb</span> <span class="operator">=</span> detailMap.get(key);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (sb == <span class="literal">null</span>) &#123;</span><br><span class="line">        sb = <span class="keyword">new</span> <span class="title class_">StringBuilder</span>(<span class="number">128</span>);</span><br><span class="line">        sb.append(<span class="string">&#x27;(&#x27;</span>).append(selfLight.toPlainString()).append(<span class="string">&#x27;)&#x27;</span>);</span><br><span class="line">        detailMap.put(key, sb);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        sb.append(DETAIL_SEPARATOR);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (otherAcc != <span class="literal">null</span>) &#123;</span><br><span class="line">        sb.append(otherAcc);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    sb.append(DETAIL_VALUE_SEPARATOR)</span><br><span class="line">      .append(diff.stripTrailingZeros().toPlainString());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>优势：</p>
+<ul>
+<li>无风险账号不会创建明细字符串；</li>
+<li>同一账号使用一个 <code>StringBuilder</code>；</li>
+<li>自身光衰只在开头写一次；</li>
+<li>多条明细通过 <code>&amp;</code> 连接；</li>
+<li><code>toPlainString()</code> 避免科学计数法格式；</li>
+<li><code>stripTrailingZeros()</code> 去除不必要的尾随零。</li>
+</ul>
+<h3 id="9-2-为什么-String-拼接可能造成内存压力？"><a href="#9-2-为什么-String-拼接可能造成内存压力？" class="headerlink" title="9.2 为什么 String 拼接可能造成内存压力？"></a>9.2 为什么 String 拼接可能造成内存压力？</h3><p>在循环里不断执行：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">detail = detail + item;</span><br></pre></td></tr></table></figure>
+
+<p>通常会产生新的字符串对象，反复复制已有内容。随着字符串越来越长，可能带来额外的时间和内存开销。</p>
+<p>可变的 <code>StringBuilder</code> 更适合这种循环累加场景。</p>
+<p>不过，最终调用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">details.toString()</span><br></pre></td></tr></table></figure>
+
+<p>仍会生成最终字符串。也就是说，构建器和最终字符串在转换时可能短暂同时存在，超大明细仍然可能造成内存峰值。</p>
+<p>如果明细长度可能失控，应考虑业务层面的条数&#x2F;长度限制、明细独立表、结构化子表或压缩存储等方案，而不是只依赖 <code>StringBuilder</code>。</p>
+<hr>
+<h2 id="十、优化八：批量-INSERT-与-PostgreSQL-参数上限"><a href="#十、优化八：批量-INSERT-与-PostgreSQL-参数上限" class="headerlink" title="十、优化八：批量 INSERT 与 PostgreSQL 参数上限"></a>十、优化八：批量 INSERT 与 PostgreSQL 参数上限</h2><h3 id="10-1-为什么不逐行插入？"><a href="#10-1-为什么不逐行插入？" class="headerlink" title="10.1 为什么不逐行插入？"></a>10.1 为什么不逐行插入？</h3><p>逐行插入：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (Map&lt;String, Object&gt; entity : entityList) &#123;</span><br><span class="line">    mapper.insertOne(entity);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>会造成大量数据库往返。</p>
+<p>批量插入可以把多行合并成一个 SQL 语句，减少网络交互与执行开销。</p>
+<h3 id="10-2-根据列数计算批次上限"><a href="#10-2-根据列数计算批次上限" class="headerlink" title="10.2 根据列数计算批次上限"></a>10.2 根据列数计算批次上限</h3><p>当前每行 20 个绑定参数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">INSERT_COLUMN_COUNT</span> <span class="operator">=</span> <span class="number">20</span>;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">PG_MAX_BIND_PARAMS</span> <span class="operator">=</span> <span class="number">32767</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">MAX_INSERT_ROWS</span> <span class="operator">=</span></span><br><span class="line">        PG_MAX_BIND_PARAMS / INSERT_COLUMN_COUNT;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">INSERT_BATCH_ROWS</span> <span class="operator">=</span></span><br><span class="line">        Math.min(BATCH_SIZE, MAX_INSERT_ROWS);</span><br></pre></td></tr></table></figure>
+
+<p>计算：</p>
+<p>[<br>\lfloor 32767 &#x2F; 20 \rfloor &#x3D; 1638<br>]</p>
+<p>业务批次设置为 400，因此：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">实际批大小 = min(400, 1638) = 400</span><br></pre></td></tr></table></figure>
+
+<p>这意味着每条批量 INSERT 的绑定参数约为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">400 × 20 = 8000</span><br></pre></td></tr></table></figure>
+
+<p>低于代码采用的参数预算。</p>
+<p>**注意：**32767 是这份实现使用的保守参数预算，不应把它视为所有 PostgreSQL&#x2F;JDBC 版本、所有 SQL 形态下的绝对通用上限。实际约束还可能受到驱动协议、SQL 写法、列数和版本影响。应结合当前 PostgreSQL 与 JDBC 驱动版本验证。</p>
+<h3 id="10-3-并发批量插入"><a href="#10-3-并发批量插入" class="headerlink" title="10.3 并发批量插入"></a>10.3 并发批量插入</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="type">int</span> <span class="title function_">insertConcurrently</span><span class="params">(List&lt;Map&lt;String, Object&gt;&gt; entityList)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (entityList == <span class="literal">null</span> || entityList.isEmpty()) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="type">AtomicInteger</span> <span class="variable">successCount</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AtomicInteger</span>(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    forEachChunkConcurrently(</span><br><span class="line">            entityList,</span><br><span class="line">            INSERT_BATCH_ROWS,</span><br><span class="line">            INSERT_THREAD_COUNT,</span><br><span class="line">            <span class="string">&quot;数据插入&quot;</span>,</span><br><span class="line">            chunk -&gt; &#123;</span><br><span class="line">                <span class="type">int</span> <span class="variable">rows</span> <span class="operator">=</span> userFiberIssueMapper.insertBatch(chunk);</span><br><span class="line">                successCount.addAndGet(rows);</span><br><span class="line">            &#125;,</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">AtomicInteger</span>(<span class="number">0</span>)</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> successCount.get();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里用 <code>AtomicInteger</code> 做并发计数，因为多个插入任务会同时更新成功行数。</p>
+<p>并发写入也需要控制：线程数必须与连接池、数据库写入能力相匹配。并发数过高不一定提高吞吐，反而可能增加锁竞争、WAL 写入压力和连接排队。</p>
+<p>另外，批量插入失败的重试策略要谨慎：如果任务可能部分成功，直接重跑可能产生重复数据。应结合唯一约束、幂等键、事务范围和业务账期设计重跑机制。</p>
+<hr>
+<h2 id="十一、优化九：定时任务防重入与两个任务之间的协调"><a href="#十一、优化九：定时任务防重入与两个任务之间的协调" class="headerlink" title="十一、优化九：定时任务防重入与两个任务之间的协调"></a>十一、优化九：定时任务防重入与两个任务之间的协调</h2><p>导入任务和掉线升级任务各自使用 <code>AtomicBoolean</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="type">AtomicBoolean</span> <span class="variable">isTaskRunning</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AtomicBoolean</span>(<span class="literal">false</span>);</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="type">AtomicBoolean</span> <span class="variable">isOfflineTaskRunning</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AtomicBoolean</span>(<span class="literal">false</span>);</span><br></pre></td></tr></table></figure>
+
+<p>启动任务时：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (isTaskRunning.compareAndSet(<span class="literal">false</span>, <span class="literal">true</span>)) &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        importUserFiberIssueData();</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        isTaskRunning.set(<span class="literal">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>compareAndSet(false, true)</code> 是原子操作，能够防止同一个 JVM 进程内的并发调用同时进入临界流程。</p>
+<p><code>finally</code> 用于保证正常异常路径下都会重置标志。</p>
+<h3 id="11-1-它能防什么，不能防什么？"><a href="#11-1-它能防什么，不能防什么？" class="headerlink" title="11.1 它能防什么，不能防什么？"></a>11.1 它能防什么，不能防什么？</h3><p>能防：</p>
+<ul>
+<li>同一个 JVM 实例中，重复调度或手动触发造成的并发重入。</li>
+</ul>
+<p>不能防：</p>
+<ul>
+<li>多个应用实例同时执行；</li>
+<li>进程崩溃后遗留的业务半成品；</li>
+<li>数据库层面的重复写入；</li>
+<li>导入任务与升级任务之间所有可能的竞态。</li>
+</ul>
+<p>当前代码中，升级任务先检查导入标志：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (isTaskRunning.get()) &#123;</span><br><span class="line">    logger.warn(<span class="string">&quot;数据导入仍在执行，本次跳过&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这可以降低冲突概率，但<strong>单纯先 <code>get()</code> 再设置另一个标志，并不能形成跨任务的原子互斥</strong>。极端情况下，导入任务可能在升级任务检查之后立即启动。</p>
+<p>如果要求严格互斥，可考虑：</p>
+<ul>
+<li>使用同一个任务协调锁；</li>
+<li>数据库 advisory lock；</li>
+<li>分布式锁；</li>
+<li>调度平台保证单实例执行；</li>
+<li>任务状态表与账期状态机。</li>
+</ul>
+<p>选择哪种方案，取决于是否多实例部署，以及能否接受“跳过本次，人工补跑”。</p>
+<hr>
+<h2 id="十二、风险升级：分批更新、账期约束与幂等性"><a href="#十二、风险升级：分批更新、账期约束与幂等性" class="headerlink" title="十二、风险升级：分批更新、账期约束与幂等性"></a>十二、风险升级：分批更新、账期约束与幂等性</h2><p>掉线账号风险逐级升级：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">低风险 → 中风险 → 高风险</span><br><span class="line">中风险 → 高风险</span><br><span class="line">高风险 → 保持不变</span><br></pre></td></tr></table></figure>
+
+<p>升级任务先查询掉线账号并去重：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Set&lt;String&gt; offlineAccountSet = <span class="keyword">new</span> <span class="title class_">LinkedHashSet</span>&lt;&gt;();</span><br></pre></td></tr></table></figure>
+
+<p>再分批更新：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Map&lt;String, Object&gt;&gt; accountBatch = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;(BATCH_SIZE);</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (String account : offlineAccountSet) &#123;</span><br><span class="line">    Map&lt;String, Object&gt; item = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;(<span class="number">2</span>);</span><br><span class="line">    item.put(<span class="string">&quot;account&quot;</span>, account);</span><br><span class="line">    accountBatch.add(item);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (accountBatch.size() &gt;= BATCH_SIZE) &#123;</span><br><span class="line">        updateCount += updateRiskLevelSafely(accountBatch, dayId);</span><br><span class="line">        accountBatch.clear();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="12-1-为什么-UPDATE-必须带-dayId？"><a href="#12-1-为什么-UPDATE-必须带-dayId？" class="headerlink" title="12.1 为什么 UPDATE 必须带 dayId？"></a>12.1 为什么 UPDATE 必须带 dayId？</h3><p>结果表按天追加。如果只按账号更新：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">WHERE</span> account <span class="keyword">IN</span> (...)</span><br></pre></td></tr></table></figure>
+
+<p>可能把该账号历史账期的风险记录一起升级，造成历史数据被篡改。</p>
+<p>应限制账期，并使用 <code>is_upgrade</code> 作为重复执行闸门。例如，Mapper SQL 的业务条件应体现：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">WHERE</span> day_id <span class="operator">=</span> #&#123;dayId&#125;</span><br><span class="line">  <span class="keyword">AND</span> is_upgrade <span class="operator">=</span> <span class="string">&#x27;0&#x27;</span></span><br><span class="line">  <span class="keyword">AND</span> account <span class="keyword">IN</span> (...)</span><br></pre></td></tr></table></figure>
+
+<p>字段名、类型及具体 SQL 以实际表结构为准。</p>
+<h3 id="12-2-幂等性不是“用了-Set”就足够"><a href="#12-2-幂等性不是“用了-Set”就足够" class="headerlink" title="12.2 幂等性不是“用了 Set”就足够"></a>12.2 幂等性不是“用了 Set”就足够</h3><p>Set 只能对本次待处理账号去重。真正避免重复升级，需要数据库更新条件也具备状态闸门。</p>
+<p>例如，第一次执行：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">低风险 → 中风险，is_upgrade = 1</span><br></pre></td></tr></table></figure>
+
+<p>第二次执行时，因为 <code>is_upgrade = 1</code>，不再参与升级，避免继续变成高风险。</p>
+<h3 id="12-3-需要注意的异常处理"><a href="#12-3-需要注意的异常处理" class="headerlink" title="12.3 需要注意的异常处理"></a>12.3 需要注意的异常处理</h3><p>当前 <code>updateRiskLevelSafely()</code> 捕获单批异常并返回 0：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="type">int</span> <span class="title function_">updateRiskLevelSafely</span><span class="params">(List&lt;Map&lt;String, Object&gt;&gt; accountBatch,</span></span><br><span class="line"><span class="params">                                  String dayId)</span> &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> userFiberIssueMapper.upgradeRiskLevelByAccounts(</span><br><span class="line">                accountBatch, dayId,</span><br><span class="line">                RISK_LOW, RISK_MID, RISK_HIGH,</span><br><span class="line">                UPGRADE_YES, UPGRADE_NO);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        logger.error(<span class="string">&quot;批量升级 risklevel 失败&quot;</span>, e);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这会使任务继续处理后续批次，但也意味着最终“实际更新行数”不包含失败批次，且方法仍可能返回正常摘要。</p>
+<p>生产上建议至少做到：</p>
+<ul>
+<li>记录失败批次范围与账号数量；</li>
+<li>汇总成功、失败批次；</li>
+<li>失败时返回明确的部分失败状态；</li>
+<li>支持按失败批次补跑；</li>
+<li>需要强一致性时采用事务或任务状态控制。</li>
+</ul>
+<hr>
+<h2 id="十三、为什么这些措施能缓解-OOM？"><a href="#十三、为什么这些措施能缓解-OOM？" class="headerlink" title="十三、为什么这些措施能缓解 OOM？"></a>十三、为什么这些措施能缓解 OOM？</h2><p>这次改造的重点是减少不必要的对象存活时间和重复数据结构。</p>
+<h3 id="改造前的典型风险"><a href="#改造前的典型风险" class="headerlink" title="改造前的典型风险"></a>改造前的典型风险</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">所有账号</span><br><span class="line">  + 全部 PON 分组</span><br><span class="line">  + 全部账号风险明细</span><br><span class="line">  + 全部插入实体</span><br><span class="line">  + 大量待执行任务</span><br></pre></td></tr></table></figure>
+
+<p>随着处理推进，多个阶段的数据可能同时留在堆中。</p>
+<h3 id="改造后的主要思路"><a href="#改造后的主要思路" class="headerlink" title="改造后的主要思路"></a>改造后的主要思路</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">全量基础行（保留必要字段）</span><br><span class="line">  + 当前查询映射（查询阶段使用）</span><br><span class="line">  + PON 分组引用</span><br><span class="line">  + 当前分片的明细与实体</span><br><span class="line">  + 有限数量的并发任务</span><br></pre></td></tr></table></figure>
+
+<p>主要收益：</p>
+<ol>
+<li><strong>数据库往返减少</strong>：避免逐 PON 口重复查询；</li>
+<li><strong>光衰查询去重</strong>：相同 LOID 不重复查；</li>
+<li><strong>并发受控</strong>：限制同时运行的分片数；</li>
+<li><strong>明细按需生成</strong>：正常比对不产生明细；</li>
+<li><strong>风险账号才转实体</strong>：减少实体和写入量；</li>
+<li><strong>按完整 PON 口分片</strong>：保证计算正确性；</li>
+<li><strong>插入后及时断开引用</strong>：避免所有明细跨批累积；</li>
+<li><strong>数组预解析</strong>：降低内层循环重复解析成本。</li>
+</ol>
+<p>这些措施并不意味着对象会立刻从堆中消失，而是让不可达对象更早出现，使 GC 有机会回收。</p>
+<hr>
+<h2 id="十四、如何验证优化是否有效？"><a href="#十四、如何验证优化是否有效？" class="headerlink" title="十四、如何验证优化是否有效？"></a>十四、如何验证优化是否有效？</h2><p>不能只看任务是否跑成功。建议至少记录以下指标。</p>
+<h3 id="14-1-任务阶段耗时"><a href="#14-1-任务阶段耗时" class="headerlink" title="14.1 任务阶段耗时"></a>14.1 任务阶段耗时</h3><table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>建议指标</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>全量账号查询</td>
+<td>返回行数、耗时</td>
+</tr>
+<tr>
+<td>LOID 查询</td>
+<td>去重 LOID 数、批次数、命中数、耗时</td>
+</tr>
+<tr>
+<td>PON 分组</td>
+<td>口数、耗时</td>
+</tr>
+<tr>
+<td>风险计算</td>
+<td>分片耗时、大口耗时、比较次数</td>
+</tr>
+<tr>
+<td>明细</td>
+<td>风险比对数、明细总长度或抽样分布</td>
+</tr>
+<tr>
+<td>INSERT</td>
+<td>批次数、成功行数、耗时</td>
+</tr>
+<tr>
+<td>总任务</td>
+<td>总耗时、最终状态</td>
+</tr>
+</tbody></table>
+<h3 id="14-2-堆内存日志"><a href="#14-2-堆内存日志" class="headerlink" title="14.2 堆内存日志"></a>14.2 堆内存日志</h3><p>当前方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> String <span class="title function_">memSnapshot</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">Runtime</span> <span class="variable">rt</span> <span class="operator">=</span> Runtime.getRuntime();</span><br><span class="line"></span><br><span class="line">    <span class="type">long</span> <span class="variable">totalMb</span> <span class="operator">=</span> rt.totalMemory() / <span class="number">1024</span> / <span class="number">1024</span>;</span><br><span class="line">    <span class="type">long</span> <span class="variable">freeMb</span> <span class="operator">=</span> rt.freeMemory() / <span class="number">1024</span> / <span class="number">1024</span>;</span><br><span class="line">    <span class="type">long</span> <span class="variable">usedMb</span> <span class="operator">=</span> totalMb - freeMb;</span><br><span class="line">    <span class="type">long</span> <span class="variable">maxMb</span> <span class="operator">=</span> rt.maxMemory() / <span class="number">1024</span> / <span class="number">1024</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;heap=&quot;</span> + usedMb + <span class="string">&quot;MB/&quot;</span> + maxMb + <span class="string">&quot;MB&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>该指标可以用于观察趋势，但有局限：</p>
+<ul>
+<li><code>totalMemory()</code> 是 JVM 当前已提交堆容量；</li>
+<li><code>freeMemory()</code> 是当前已提交堆中的空闲空间；</li>
+<li><code>maxMemory()</code> 是最大可用堆的近似上限；</li>
+<li><code>used = total - free</code> 是某一时刻的估算；</li>
+<li>GC 前后波动明显；</li>
+<li>它不能直接告诉我们“哪些对象占内存”。</li>
+</ul>
+<p>因此，日志应与 GC 日志、JFR、堆转储和监控平台结合使用。</p>
+<h3 id="14-3-发生-OOM-时如何定位？"><a href="#14-3-发生-OOM-时如何定位？" class="headerlink" title="14.3 发生 OOM 时如何定位？"></a>14.3 发生 OOM 时如何定位？</h3><p>建议排查顺序：</p>
+<ol>
+<li>查看 OOM 类型：<code>Java heap space</code>、<code>GC overhead limit exceeded</code>、<code>unable to create native thread</code> 等；</li>
+<li>对照任务阶段日志，确认发生在哪个阶段；</li>
+<li>查看 GC 日志，判断是否持续 Full GC；</li>
+<li>必要时在安全环境生成 heap dump；</li>
+<li>用 MAT 等工具分析 Dominator Tree、Retained Heap、对象数量；</li>
+<li>检查是否存在大 Map、大 List、超长字符串或任务队列堆积；</li>
+<li>区分 Java 堆问题与线程栈、直接内存、操作系统内存问题。</li>
+</ol>
+<p>可按部署环境配置 OOM dump，例如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-XX:+HeapDumpOnOutOfMemoryError</span><br><span class="line">-XX:HeapDumpPath=/path/to/heapdump</span><br></pre></td></tr></table></figure>
+
+<p>堆转储可能包含账号、LOID 等敏感数据，应限制文件权限、保存周期和访问范围。</p>
+<hr>
+<h2 id="十五、这份实现仍需关注的风险与后续优化"><a href="#十五、这份实现仍需关注的风险与后续优化" class="headerlink" title="十五、这份实现仍需关注的风险与后续优化"></a>十五、这份实现仍需关注的风险与后续优化</h2><p>优化成功处理 OOM 是一个重要结果，但仍不代表所有规模下都安全。</p>
+<h3 id="15-1-全量原始行仍然常驻"><a href="#15-1-全量原始行仍然常驻" class="headerlink" title="15.1 全量原始行仍然常驻"></a>15.1 全量原始行仍然常驻</h3><p><code>recordList</code> 在光衰回填和分组期间持有全部原始记录。分组后，<code>recordList.clear()</code> 可以清除它自己的元素引用，但分组 List 仍然持有每一行。</p>
+<p>如果基础数据继续增长，原始行本身仍可能成为内存瓶颈。</p>
+<p>可考虑：</p>
+<ul>
+<li>SQL 只返回实际需要的字段；</li>
+<li>使用轻量 POJO&#x2F;数组替代通用 <code>Map</code>；</li>
+<li>在满足完整 PON 口约束的前提下，按设备范围流式处理；</li>
+<li>对超大 PON 口做独立策略；</li>
+<li>通过临时表先物化必要数据，再分段计算。</li>
+</ul>
+<h3 id="15-2-单个超大-PON-口仍可能-OOM-或耗时过长"><a href="#15-2-单个超大-PON-口仍可能-OOM-或耗时过长" class="headerlink" title="15.2 单个超大 PON 口仍可能 OOM 或耗时过长"></a>15.2 单个超大 PON 口仍可能 OOM 或耗时过长</h3><p>分片单位是 PON 口。如果某个口本身拥有数千甚至上万账号：</p>
+<ul>
+<li>比较次数为 <code>O(n²)</code>；</li>
+<li>风险明细可能很大；</li>
+<li>单口的 <code>StringBuilder</code> 和实体数量可能非常可观。</li>
+</ul>
+<p>可以考虑按光衰排序后的算法优化风险识别。但如果还需要输出所有满足 <code>diff &gt; 10</code> 的账号对，输出规模本身可能达到二次量级，无法仅靠算法消除。</p>
+<p>必须先明确业务究竟需要：</p>
+<ul>
+<li>每个账号的最高风险；</li>
+<li>每个账号任意一条风险证据；</li>
+<li>还是所有风险比对明细。</li>
+</ul>
+<p>不同输出要求对应不同算法与存储设计。</p>
+<h3 id="15-3-fiberDetail-的数据库字段容量"><a href="#15-3-fiberDetail-的数据库字段容量" class="headerlink" title="15.3 fiberDetail 的数据库字段容量"></a>15.3 <code>fiberDetail</code> 的数据库字段容量</h3><p>需要核对目标字段类型和长度。单个账号的明细可能随着口规模增大而快速变长。</p>
+<p>应统计：</p>
+<ul>
+<li>最大长度；</li>
+<li>P95&#x2F;P99 长度；</li>
+<li>单口风险比对数；</li>
+<li>插入失败是否存在字段长度或协议限制。</li>
+</ul>
+<h3 id="15-4-分片插入的原子性与任务重跑"><a href="#15-4-分片插入的原子性与任务重跑" class="headerlink" title="15.4 分片插入的原子性与任务重跑"></a>15.4 分片插入的原子性与任务重跑</h3><p>当前是分片写入。若前 20 片成功，第 21 片失败，目标表可能已经有部分结果。</p>
+<p>这会带来：</p>
+<ul>
+<li>手动重跑重复插入；</li>
+<li>同一账期结果不完整；</li>
+<li>升级任务处理到部分数据。</li>
+</ul>
+<p>建议设计清晰的幂等策略，例如：</p>
+<ul>
+<li>以账期 + 业务唯一键建立唯一约束；</li>
+<li>使用 staging 表，完整计算后再切换；</li>
+<li>先删除指定账期再重算（需评估并发与事务影响）；</li>
+<li>用任务状态表记录开始、成功、失败与阶段；</li>
+<li>将写入设计成可安全重试。</li>
+</ul>
+<p>不要在未确认业务唯一键前，直接对现有表增加唯一约束。</p>
+<h3 id="15-5-AtomicBoolean-是-JVM-内锁，不是分布式锁"><a href="#15-5-AtomicBoolean-是-JVM-内锁，不是分布式锁" class="headerlink" title="15.5 AtomicBoolean 是 JVM 内锁，不是分布式锁"></a>15.5 <code>AtomicBoolean</code> 是 JVM 内锁，不是分布式锁</h3><p>多实例部署时，每个实例都有自己的 <code>AtomicBoolean</code>。若定时任务可能在多个节点同时执行，需要分布式调度或数据库级互斥。</p>
+<h3 id="15-6-Map-字段名与-SQL-别名"><a href="#15-6-Map-字段名与-SQL-别名" class="headerlink" title="15.6 Map 字段名与 SQL 别名"></a>15.6 <code>Map</code> 字段名与 SQL 别名</h3><p><code>Map</code> 结果映射容易受到数据库列名大小写、MyBatis 配置和 SQL 别名影响。</p>
+<p>例如代码取：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">getNullableString(row, <span class="string">&quot;telnetip&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>就要求 Mapper 实际返回的键名与之匹配。建议在 SQL 中显式统一别名，并为关键字段增加集成测试，避免某些环境返回 <code>telnetIp</code>、另一些环境返回 <code>telnetip</code>。</p>
+<h3 id="15-7-缺失光衰与缺失设备标识的业务口径"><a href="#15-7-缺失光衰与缺失设备标识的业务口径" class="headerlink" title="15.7 缺失光衰与缺失设备标识的业务口径"></a>15.7 缺失光衰与缺失设备标识的业务口径</h3><p>当前逻辑中：</p>
+<ul>
+<li>光衰为空&#x2F;非法值：不参与比较；</li>
+<li>PON 标识缺失：空字符串参与拼接分组键；</li>
+<li>账号为空：不会进入账号风险 Map。</li>
+</ul>
+<p>这可能符合现有业务要求，但建议监控无效数据数量。尤其是多个缺失设备标识的账号可能被合并到同一个空键组内比较，这通常需要业务确认。更安全的做法可能是将设备标识缺失的记录隔离或跳过。</p>
+<hr>
+<h2 id="十六、Java-8-中用到的核心知识点回顾"><a href="#十六、Java-8-中用到的核心知识点回顾" class="headerlink" title="十六、Java 8 中用到的核心知识点回顾"></a>十六、Java 8 中用到的核心知识点回顾</h2><table>
+<thead>
+<tr>
+<th>知识点</th>
+<th>本任务中的用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>List</code> &#x2F; <code>Map</code> &#x2F; <code>Set</code></td>
+<td>原始行、分组、索引、去重</td>
+</tr>
+<tr>
+<td><code>LinkedHashSet</code></td>
+<td>去重并保持插入顺序</td>
+</tr>
+<tr>
+<td><code>LinkedHashMap</code></td>
+<td>保持分组遍历顺序</td>
+</tr>
+<tr>
+<td><code>HashMap</code></td>
+<td>风险等级和明细映射</td>
+</tr>
+<tr>
+<td><code>ConcurrentHashMap</code></td>
+<td>并发查询结果汇总</td>
+</tr>
+<tr>
+<td><code>StringBuilder</code></td>
+<td>明细高效拼接</td>
+</tr>
+<tr>
+<td><code>BigDecimal</code></td>
+<td>精确处理十进制阈值</td>
+</tr>
+<tr>
+<td><code>AtomicBoolean</code></td>
+<td>同 JVM 任务防重入</td>
+</tr>
+<tr>
+<td><code>AtomicInteger</code></td>
+<td>并发计数</td>
+</tr>
+<tr>
+<td><code>AtomicReference</code></td>
+<td>保存首个异常</td>
+</tr>
+<tr>
+<td><code>ExecutorService</code></td>
+<td>固定线程池执行分片任务</td>
+</tr>
+<tr>
+<td><code>Semaphore</code></td>
+<td>限制在途任务，形成背压</td>
+</tr>
+<tr>
+<td><code>try/finally</code></td>
+<td>确保许可归还、标志重置</td>
+</tr>
+<tr>
+<td><code>compareAndSet</code></td>
+<td>原子状态切换</td>
+</tr>
+<tr>
+<td><code>Map.merge</code></td>
+<td>累积账号最高风险</td>
+</tr>
+<tr>
+<td>泛型方法</td>
+<td>复用通用分片执行逻辑</td>
+</tr>
+<tr>
+<td><code>subList</code></td>
+<td>创建分片范围视图；本实现再复制成独立 List</td>
+</tr>
+<tr>
+<td><code>Runtime</code></td>
+<td>采集 JVM 堆内存趋势</td>
+</tr>
+<tr>
+<td>Spring <code>@Scheduled</code></td>
+<td>定时任务调度</td>
+</tr>
+<tr>
+<td>MyBatis Mapper</td>
+<td>查询、批量写入和批量更新</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="十七、总结"><a href="#十七、总结" class="headerlink" title="十七、总结"></a>十七、总结</h2><p>这次 OOM 优化的核心，并不是某个“神奇参数”，而是重新设计了数据在任务中的流动方式：</p>
+<ol>
+<li>数据库侧减少重复查询；</li>
+<li>查询侧按 LOID 去重、分批和受控并发；</li>
+<li>计算侧按完整 PON 口分片；</li>
+<li>算法侧减少 Map 查找、精确数值运算和字符串创建；</li>
+<li>存储侧只落有风险账号，并批量插入；</li>
+<li>生命周期侧及时清空容器、断开引用；</li>
+<li>任务侧限制并发、记录异常、避免重复执行；</li>
+<li>验证侧用阶段耗时、堆趋势和 GC&#x2F;堆分析形成闭环。</li>
+</ol>
+<p>最值得记住的一句话：</p>
+<blockquote>
+<p><strong>大数据任务的内存优化，关键不只是减少数据量，而是减少重复数据结构、控制并发在途量，并缩短大对象的存活时间。</strong></p>
+</blockquote>
+<p>同时，OOM 被解决只是阶段性成果。随着用户规模、单口规模和风险明细长度继续增长，还需要持续验证算法复杂度、数据一致性、重跑幂等性和数据库承载能力。</p>
+
+        
+        <br />
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+        <div id="lv-container"></div>
+        <div class="giscus"></div>
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+
+        
+
+        
+
+        
+
+        
+
+    </ul>
+    
+    <p>
+        <span id="busuanzi_container_site_pv">
+            <span id="busuanzi_value_site_pv"></span>PV
+        </span>
+        <span id="busuanzi_container_site_uv">
+            <span id="busuanzi_value_site_uv"></span>UV
+        </span>
+        Created By <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>  Theme <a target="_blank" rel="noopener" href="https://github.com/aircloud/hexo-theme-aircloud">AirCloud</a></p>
+</footer>
+
+
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = ""
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="/js/index.js"></script>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+    <script src="https://giscus.app/client.js"
+    data-repo="zzrve7/zzrve7.github.io"
+    data-repo-id="R_kgDOQnRIeA"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOQnRIeM4C5nXg"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="bottom"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    crossorigin="anonymous"
+    async>
+</script>
+
+
+
+
+</html>
